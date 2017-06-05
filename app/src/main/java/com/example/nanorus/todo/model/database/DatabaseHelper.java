@@ -4,15 +4,13 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import static android.R.attr.version;
-
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "todoDatabase.db";
 
     public DatabaseHelper(Context context) {
-        super(context, DATABASE_NAME, null, version);
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
 
@@ -24,7 +22,46 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL(DatabaseContract.DatabaseEntry.SQL_DELETE_TABLE_NOTES);
-        onCreate(db);
+        if (newVersion == 2) {
+            String sql_add_column =
+                    "ALTER TABLE " + DatabaseContract.DatabaseEntry.TABLE_NAME_NOTES + " ADD COLUMN " +
+                            DatabaseContract.DatabaseEntry.COLUMN_NAME_PRIORITY + " INTEGER";
+
+            String sql_insert_priority =
+                    "INSERT INTO " + DatabaseContract.DatabaseEntry.TABLE_NAME_NOTES +
+                    " (" + DatabaseContract.DatabaseEntry.COLUMN_NAME_PRIORITY + ") VALUES (1)";
+
+
+            db.execSQL(sql_add_column);
+            db.execSQL(sql_insert_priority);
+        }
+
+
+        // wipe
+        /*
+            db.execSQL(DatabaseContract.DatabaseEntry.SQL_DELETE_TABLE_NOTES);
+            onCreate(db);
+         */
+    }
+
+    @Override
+    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
+
+        if (newVersion == 2) {
+            String sql_add_column =
+                    "ALTER TABLE " + DatabaseContract.DatabaseEntry.TABLE_NAME_NOTES + " ADD COLUMN " +
+                            DatabaseContract.DatabaseEntry.COLUMN_NAME_PRIORITY + " INTEGER";
+
+            String sql_insert_priority =
+                    "INSERT INTO " + DatabaseContract.DatabaseEntry.TABLE_NAME_NOTES +
+                            " (" + DatabaseContract.DatabaseEntry.COLUMN_NAME_PRIORITY + ") VALUES (1)";
+
+
+            db.execSQL(sql_add_column);
+            db.execSQL(sql_insert_priority);
+        }
+
+
     }
 }

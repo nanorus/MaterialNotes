@@ -28,6 +28,7 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
     @Override
     public void onBindViewHolder(NotesRecyclerViewHolder holder, int position) {
         holder.name.setText(mNotes.get(position).getName());
+        holder.priority.setText(String.valueOf(mNotes.get(position).getPriority()));
     }
 
     @Override
@@ -37,10 +38,12 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
 
     class NotesRecyclerViewHolder extends RecyclerView.ViewHolder {
         TextView name;
+        TextView priority;
 
         public NotesRecyclerViewHolder(View itemView) {
             super(itemView);
             name = (TextView) itemView.findViewById(R.id.list_item_note_name);
+            priority = (TextView) itemView.findViewById(R.id.list_item_note_tv_priority);
         }
     }
 }

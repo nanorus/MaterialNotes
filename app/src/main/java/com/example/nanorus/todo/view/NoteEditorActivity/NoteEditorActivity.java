@@ -20,6 +20,7 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
     FloatingActionButton mFab;
     EditText editor_et_noteName;
     EditText editor_et_description;
+    EditText editor_et_priority;
     int mType;
     int mPosition;
     public final static int INTENT_TYPE_UPDATE = 1;
@@ -43,6 +44,7 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
         mCollapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.noteEditor_collapsing);
         editor_et_noteName = (EditText) findViewById(R.id.editor_et_noteName);
         editor_et_description = (EditText) findViewById(R.id.editor_et_description);
+        editor_et_priority = (EditText) findViewById(R.id.note_editor_et_priority) ;
         mFab = (FloatingActionButton) findViewById(R.id.editor_fab_go);
 
         switch (mType) {
@@ -63,6 +65,11 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
     @Override
     public void setName(String name) {
         editor_et_noteName.setText(name);
+    }
+
+    @Override
+    public void setPriority(String priority) {
+        editor_et_priority.setText(priority);
     }
 
     @Override
@@ -95,7 +102,7 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
                                 0,
                                 editor_et_noteName.getText().toString(),
                                 editor_et_description.getText().toString(),
-                                1,
+                                editor_et_priority.getText().toString(),
                                 null);
                     }
                 });
@@ -132,7 +139,7 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
                                 mPosition,
                                 editor_et_noteName.getText().toString(),
                                 editor_et_description.getText().toString(),
-                                1,
+                                editor_et_priority.getText().toString(),
                                 null);
                     }
                 });

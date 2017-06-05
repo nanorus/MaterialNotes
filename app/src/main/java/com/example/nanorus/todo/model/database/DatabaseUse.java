@@ -21,6 +21,7 @@ public final class DatabaseUse {
         ContentValues values = new ContentValues();
         values.put(DatabaseContract.DatabaseEntry.COLUMN_NAME_NAME, notePojo.getName());
         values.put(DatabaseContract.DatabaseEntry.COLUMN_NAME_DESCRIPTION, notePojo.getDescription());
+        values.put(DatabaseContract.DatabaseEntry.COLUMN_NAME_PRIORITY, notePojo.getPriority());
 
         db.update(DatabaseContract.DatabaseEntry.TABLE_NAME_NOTES, values,
                 DatabaseContract.DatabaseEntry.COLUMN_NAME_ID + "=" + id, null);
@@ -35,9 +36,9 @@ public final class DatabaseUse {
         ContentValues cv = new ContentValues();
         cv.put(DatabaseContract.DatabaseEntry.COLUMN_NAME_NAME, notePojo.getName());
         cv.put(DatabaseContract.DatabaseEntry.COLUMN_NAME_DESCRIPTION, notePojo.getDescription());
+        cv.put(DatabaseContract.DatabaseEntry.COLUMN_NAME_PRIORITY, notePojo.getPriority());
 
-        long newRowId;
-        newRowId = db.insert(DatabaseContract.DatabaseEntry.TABLE_NAME_NOTES, null, cv);
+         db.insert(DatabaseContract.DatabaseEntry.TABLE_NAME_NOTES, null, cv);
 
         Toast.makeText(context, "Note added", Toast.LENGTH_SHORT).show();
 
@@ -55,7 +56,7 @@ public final class DatabaseUse {
                     c.getString(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_NAME)),
                     null,
                     c.getString(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_DESCRIPTION)),
-                    1
+                    c.getInt(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_PRIORITY))
             ));
 
             while (c.moveToNext()) {
@@ -63,7 +64,7 @@ public final class DatabaseUse {
                         c.getString(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_NAME)),
                         null,
                         c.getString(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_DESCRIPTION)),
-                        1
+                        c.getInt(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_PRIORITY))
                 ));
             }
 
@@ -85,7 +86,7 @@ public final class DatabaseUse {
                     c.getString(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_NAME)),
                     null,
                     c.getString(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_DESCRIPTION)),
-                    1
+                    c.getInt(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_PRIORITY))
             );
             return notePojo;
 

@@ -33,6 +33,8 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
     RecyclerView mNotesList;
     SwipeRefreshLayout mSwipeRefresh;
     ImageView tb_clear;
+    ImageView list_item_note_iv_priority_color;
+
 
     private static Bus sBus;
 
@@ -42,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         mPresenter = new MainPresenter(getActivity());
         mToolbar = (Toolbar) findViewById(R.id.main_toolbar);
         mFab = (FloatingActionButton) findViewById(R.id.main_fab_add);
@@ -49,9 +52,8 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mNotesList = (RecyclerView) findViewById(R.id.main_rv_notesList);
-
         tb_clear = (ImageView) findViewById(R.id.main_tb_clear);
-
+        list_item_note_iv_priority_color = (ImageView) findViewById(R.id.list_item_note_iv_priority_color);
 
         LinearLayoutManager manager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         mNotesList.setLayoutManager(manager);

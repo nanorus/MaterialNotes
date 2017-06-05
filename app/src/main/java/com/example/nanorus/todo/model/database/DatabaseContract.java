@@ -19,22 +19,29 @@ public final class DatabaseContract {
 
         public static final String FIRST_NOTE_NAME = "Начать жизнь с нуля";
         public static final String FIRST_NOTE_DESCRIPTION = "Делаем зарядку, пьем много воды.\nДышим свежим воздухом.";
+        public static final String FIRST_NOTE_PRIORITY = "2";
 
         public static final String SQL_CREATE_TABLE_NOTES =
                 "CREATE TABLE " + TABLE_NAME_NOTES + " (" +
-                        COLUMN_NAME_ID + " INTEGER PRIMARY KEY" + COMMA_SEP +
-                        COLUMN_NAME_NAME + TEXT_TYPE + COMMA_SEP +
-                        COLUMN_NAME_DESCRIPTION + TEXT_TYPE + COMMA_SEP +
-                        COLUMN_NAME_PRIORITY + " INTEGER )";
+                        COLUMN_NAME_ID + " INTEGER PRIMARY KEY" + COMMA_SEP +   // _id
+                        COLUMN_NAME_NAME + TEXT_TYPE + COMMA_SEP +              // name
+                        COLUMN_NAME_DESCRIPTION + TEXT_TYPE + COMMA_SEP +       // description
+                        COLUMN_NAME_PRIORITY + " INTEGER"+                      // priority
+                        " )";
 
         public static final String SQL_DELETE_TABLE_NOTES =
                 "DROP TABLE IF EXISTS " + TABLE_NAME_NOTES;
 
         public static final String SQL_INSERT_FIRST_ENTRY_INTO_NOTES =
-                "INSERT INTO " + TABLE_NAME_NOTES +
-                        " (" + COLUMN_NAME_NAME + COMMA_SEP + COLUMN_NAME_DESCRIPTION + COMMA_SEP + COLUMN_NAME_PRIORITY + ") VALUES" +
-                        "(\"" + FIRST_NOTE_NAME + "\"" + COMMA_SEP + "\"" + FIRST_NOTE_DESCRIPTION + "\"" +
-                        COMMA_SEP + "1" + ")";
+                "INSERT INTO " + TABLE_NAME_NOTES + " (" +
+                        COLUMN_NAME_NAME + COMMA_SEP +
+                        COLUMN_NAME_DESCRIPTION + COMMA_SEP +
+                        COLUMN_NAME_PRIORITY +
+                        ") VALUES ("+
+                        "\"" + FIRST_NOTE_NAME + "\"" + COMMA_SEP +
+                        "\"" + FIRST_NOTE_DESCRIPTION + "\"" + COMMA_SEP +
+                        FIRST_NOTE_PRIORITY +
+                        ")";
 
     }
 

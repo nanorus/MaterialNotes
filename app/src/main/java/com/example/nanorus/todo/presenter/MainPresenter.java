@@ -27,7 +27,7 @@ public class MainPresenter implements MainView.Action {
             noteRecyclerPojos.add(new NoteRecyclerPojo(
                     notePojos.get(i).getName(),
                     null,
-                    1
+                    notePojos.get(i).getPriority()
             ));
         }
         return noteRecyclerPojos;
