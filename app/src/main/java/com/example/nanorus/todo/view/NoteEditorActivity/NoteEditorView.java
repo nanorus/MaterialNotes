@@ -4,6 +4,8 @@ public interface NoteEditorView {
     interface Action {
         void onFabClicked(int type, int position, String name, String description, String priority, String date);
 
+        void deleteNote(int position);
+
         void setFields(int position);
 
         void releasePresenter();

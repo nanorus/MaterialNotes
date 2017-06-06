@@ -1,14 +1,17 @@
 package com.example.nanorus.todo.view.NoteEditorActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import com.example.nanorus.nanojunior.R;
 import com.example.nanorus.todo.presenter.NoteEditorPresenter;
@@ -21,6 +24,7 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
     EditText editor_et_noteName;
     EditText editor_et_description;
     EditText editor_et_priority;
+    ImageView note_editor_iv_delete;
     int mType;
     int mPosition;
     public final static int INTENT_TYPE_UPDATE = 1;
@@ -44,12 +48,14 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
         mCollapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.noteEditor_collapsing);
         editor_et_noteName = (EditText) findViewById(R.id.editor_et_noteName);
         editor_et_description = (EditText) findViewById(R.id.editor_et_description);
-        editor_et_priority = (EditText) findViewById(R.id.note_editor_et_priority) ;
+        editor_et_priority = (EditText) findViewById(R.id.note_editor_et_priority);
+        note_editor_iv_delete = (ImageView) findViewById(R.id.note_editor_iv_delete);
         mFab = (FloatingActionButton) findViewById(R.id.editor_fab_go);
 
         switch (mType) {
             case INTENT_TYPE_ADD:
                 mCollapsingToolbarLayout.setTitle("Add note");
+                note_editor_iv_delete.setVisibility(View.INVISIBLE);
                 break;
             case INTENT_TYPE_UPDATE:
                 mCollapsingToolbarLayout.setTitle("Edit note");
@@ -95,6 +101,7 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
         switch (mType) {
             case INTENT_TYPE_ADD:
 
+
                 mFab.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -132,6 +139,33 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
 
 
             case INTENT_TYPE_UPDATE:
+                note_editor_iv_delete.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        CharSequence[] items = {"Yes", "No"};
+                        final int DIALOG_YES = 0;
+                        final int DIALOG_NO = 1;
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+                        builder.setTitle("Delete this note?");
+                        builder.setItems(items, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                switch (which) {
+                                    case DIALOG_YES:
+                                        mPresenter.deleteNote(mPosition);
+                                        break;
+                                    case DIALOG_NO:
+                                        dialog.dismiss();
+                                        break;
+                                }
+                            }
+                        });
+                        builder.show();
+                        return false;
+                    }
+                });
                 mFab.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

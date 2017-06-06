@@ -46,6 +46,13 @@ public class NoteEditorPresenter implements NoteEditorView.Action {
 
     }
 
+    @Override
+    public void deleteNote(int position) {
+        int id = DatabaseUse.getNoteDbIdByPosition(mActivity, position);
+        DatabaseUse.deleteNote(id, mActivity);
+        mActivity.onBackPressed();
+        EventBus.getBus().post(new UpdateNotesListEvent());
+    }
 
 
     @Override
