@@ -21,6 +21,7 @@ import com.example.nanorus.todo.bus.event.UpdateNotesListEvent;
 import com.example.nanorus.todo.model.database.DatabaseUse;
 import com.example.nanorus.todo.model.pojo.NoteRecyclerPojo;
 import com.example.nanorus.todo.presenter.MainPresenter;
+import com.example.nanorus.todo.utils.PreferenceUse;
 import com.example.nanorus.todo.view.NoteEditorActivity.NoteEditorActivity;
 import com.example.nanorus.todo.view.ui.adapters.NotesRecyclerViewAdapter;
 import com.example.nanorus.todo.view.ui.recyclerView.ItemClickSupport;
@@ -46,11 +47,13 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
     SwipeRefreshLayout mSwipeRefresh;
     ImageView tb_clear;
     ImageView list_item_note_iv_priority_color;
+    private PreferenceUse mPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mPreferences = new PreferenceUse(getActivity());
 
         mPresenter = new MainPresenter(getActivity());
         mToolbar = (Toolbar) findViewById(R.id.main_toolbar);
@@ -107,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
 
 
         EventBus.getBus().register(this);
-        EventBus.getBus().post(new UpdateNotesListEvent(mPresenter.loadSortType()));
+        EventBus.getBus().post(new UpdateNotesListEvent(mPreferences.loadSortType()));
 
         setListeners();
         setDrawer();
@@ -123,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
     @Override
     public void updateNotesList(int sortBy) {
 
-                List<NoteRecyclerPojo> list = mPresenter.getAllNotesRecyclerPojo(sortBy);
+        List<NoteRecyclerPojo> list = mPresenter.getAllNotesRecyclerPojo(sortBy);
         NotesRecyclerViewAdapter adapter = new NotesRecyclerViewAdapter(list);
         mNotesList.setAdapter(adapter);
     }
@@ -173,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
         mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                EventBus.getBus().post(new UpdateNotesListEvent(mPresenter.loadSortType()));
+                EventBus.getBus().post(new UpdateNotesListEvent(mPreferences.loadSortType()));
                 mSwipeRefresh.setRefreshing(false);
             }
         });
@@ -187,11 +190,13 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
     }
 
     private void goNoteEditorActivity(int type, int position) {
-        Intent intent = new Intent();
+        Intent intent = new Intent(getActivity(), NoteEditorActivity.class);
         intent.putExtra("type", type);
-        if (type == NoteEditorActivity.INTENT_TYPE_UPDATE)
+        if (type == NoteEditorActivity.INTENT_TYPE_UPDATE) {
             intent.putExtra("position", position);
-        startActivity(new Intent(getActivity(), NoteEditorActivity.class));
+            intent.putExtra("sortType", mPreferences.loadSortType());
+        }
+        startActivity(intent);
     }
 
     private void setDrawer() {
@@ -239,19 +244,19 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
                                 goNoteEditorActivity(NoteEditorActivity.INTENT_TYPE_ADD, 0);
                                 break;
                             case 21:
-                                mPresenter.saveSortType(DatabaseUse.SORT_BY_DATE_CREATING);
+                                mPreferences.saveSortType(DatabaseUse.SORT_BY_DATE_CREATING);
                                 EventBus.getBus().post(new UpdateNotesListEvent(DatabaseUse.SORT_BY_DATE_CREATING));
                                 break;
                             case 22:
-                                mPresenter.saveSortType(DatabaseUse.SORT_BY_NAME);
+                                mPreferences.saveSortType(DatabaseUse.SORT_BY_NAME);
                                 EventBus.getBus().post(new UpdateNotesListEvent(DatabaseUse.SORT_BY_NAME));
                                 break;
                             case 23:
-                                mPresenter.saveSortType(DatabaseUse.SORT_BY_PRIORITY);
+                                mPreferences.saveSortType(DatabaseUse.SORT_BY_PRIORITY);
                                 EventBus.getBus().post(new UpdateNotesListEvent(DatabaseUse.SORT_BY_PRIORITY));
                                 break;
                             case 24:
-                                mPresenter.saveSortType(DatabaseUse.SORT_BY_DATE_TIME);
+                                mPreferences.saveSortType(DatabaseUse.SORT_BY_DATE_TIME);
                                 EventBus.getBus().post(new UpdateNotesListEvent(DatabaseUse.SORT_BY_DATE_TIME));
                                 break;
                         }

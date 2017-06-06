@@ -8,9 +8,7 @@ public interface MainView {
     interface Action {
         List<NoteRecyclerPojo> getAllNotesRecyclerPojo(int sortBy);
 
-        void saveSortType(int sortType);
 
-        int loadSortType();
 
         void deleteNote(int position);
 

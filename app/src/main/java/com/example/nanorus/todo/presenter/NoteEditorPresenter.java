@@ -6,15 +6,18 @@ import com.example.nanorus.todo.bus.EventBus;
 import com.example.nanorus.todo.bus.event.UpdateNotesListEvent;
 import com.example.nanorus.todo.model.database.DatabaseUse;
 import com.example.nanorus.todo.model.pojo.NotePojo;
+import com.example.nanorus.todo.utils.PreferenceUse;
 import com.example.nanorus.todo.view.NoteEditorActivity.NoteEditorActivity;
 import com.example.nanorus.todo.view.NoteEditorActivity.NoteEditorView;
 
 
 public class NoteEditorPresenter implements NoteEditorView.Action {
-    NoteEditorActivity mActivity;
+  private  NoteEditorActivity mActivity;
+   private PreferenceUse mPreferences;
 
     public NoteEditorPresenter(NoteEditorActivity activity) {
         mActivity = activity;
+        mPreferences = new PreferenceUse(activity);
     }
 
     @Override
@@ -29,12 +32,12 @@ public class NoteEditorPresenter implements NoteEditorView.Action {
                     break;
 
                 case NoteEditorActivity.INTENT_TYPE_UPDATE:
-                    int id = DatabaseUse.getNoteDbIdByPosition(mActivity.getActivity(), position);
+                    int id = DatabaseUse.getNoteDbIdByPosition(mActivity, position, mPreferences.loadSortType());
                     DatabaseUse.updateNote(notePojo, mActivity.getActivity(), id);
                     break;
             }
 
-            EventBus.getBus().post(new UpdateNotesListEvent(DatabaseUse.SORT_BY_DATE_CREATING));
+            EventBus.getBus().post(new UpdateNotesListEvent(mPreferences.loadSortType()));
             mActivity.onBackPressed();
 
         } catch (java.lang.NumberFormatException e) {
@@ -47,16 +50,16 @@ public class NoteEditorPresenter implements NoteEditorView.Action {
 
     @Override
     public void deleteNote(int position) {
-        int id = DatabaseUse.getNoteDbIdByPosition(mActivity, position);
+        int id = DatabaseUse.getNoteDbIdByPosition(mActivity, position, mPreferences.loadSortType());
         DatabaseUse.deleteNote(id, mActivity);
         mActivity.onBackPressed();
-        EventBus.getBus().post(new UpdateNotesListEvent(DatabaseUse.SORT_BY_DATE_CREATING));
+        EventBus.getBus().post(new UpdateNotesListEvent(mPreferences.loadSortType()));
     }
 
 
     @Override
     public void setFields(int position) {
-        int id = DatabaseUse.getNoteDbIdByPosition(mActivity.getActivity(), position);
+        int id = DatabaseUse.getNoteDbIdByPosition(mActivity, position, mPreferences.loadSortType());
         NotePojo notePojo = DatabaseUse.getNote(mActivity.getActivity(), id);
 
         mActivity.setName(notePojo.getName());

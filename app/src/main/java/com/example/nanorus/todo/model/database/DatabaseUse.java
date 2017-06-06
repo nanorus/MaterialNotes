@@ -136,12 +136,32 @@ public final class DatabaseUse {
         db.execSQL(DatabaseContract.DatabaseEntry.SQL_CREATE_TABLE_NOTES);
     }
 
-    public static int getNoteDbIdByPosition(Context context, int position) {
+    public static int getNoteDbIdByPosition(Context context, int position, int sortType) {
         DatabaseHelper databaseHelper = new DatabaseHelper(context);
         SQLiteDatabase db = databaseHelper.getReadableDatabase();
 
+        String orderBy;
+
+        switch (sortType) {
+            case DatabaseUse.SORT_BY_DATE_CREATING:
+                orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_ID;
+                break;
+            case DatabaseUse.SORT_BY_NAME:
+                orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_NAME;
+                break;
+            case DatabaseUse.SORT_BY_PRIORITY:
+                orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_PRIORITY;
+                break;
+            case DatabaseUse.SORT_BY_DATE_TIME:
+                orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_ID;
+                break;
+            default:
+                orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_ID;
+                break;
+        }
         Cursor c = db.rawQuery("SELECT * FROM " + DatabaseContract.DatabaseEntry.TABLE_NAME_NOTES +
-                " LIMIT 1 OFFSET " + position, null);
+                " ORDER BY " + orderBy +
+                " LIMIT 1 OFFSET " + position , null);
 
         int id = 1;
         if (c.moveToFirst()) {
@@ -149,5 +169,6 @@ public final class DatabaseUse {
         }
         return id;
     }
+
 
 }

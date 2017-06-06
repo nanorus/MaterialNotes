@@ -1,12 +1,11 @@
 package com.example.nanorus.todo.presenter;
 
-import android.content.SharedPreferences;
-
 import com.example.nanorus.todo.bus.EventBus;
 import com.example.nanorus.todo.bus.event.UpdateNotesListEvent;
 import com.example.nanorus.todo.model.database.DatabaseUse;
 import com.example.nanorus.todo.model.pojo.NotePojo;
 import com.example.nanorus.todo.model.pojo.NoteRecyclerPojo;
+import com.example.nanorus.todo.utils.PreferenceUse;
 import com.example.nanorus.todo.view.MainActivity.MainActivity;
 import com.example.nanorus.todo.view.MainActivity.MainView;
 
@@ -15,9 +14,11 @@ import java.util.List;
 
 public class MainPresenter implements MainView.Action {
     MainActivity mActivity;
+    private PreferenceUse mPreferences;
 
     public MainPresenter(MainActivity activity) {
         mActivity = activity;
+        mPreferences = new PreferenceUse(activity);
     }
 
     @Override
@@ -35,23 +36,11 @@ public class MainPresenter implements MainView.Action {
         return noteRecyclerPojos;
     }
 
-    @Override
-    public void saveSortType(int sortType) {
-        SharedPreferences preferences = mActivity.getPreferences(mActivity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt("notesSortType", sortType);
-        editor.commit();
-    }
 
-    @Override
-    public int loadSortType() {
-        SharedPreferences preferences = mActivity.getPreferences(mActivity.MODE_PRIVATE);
-        return preferences.getInt("notesSortType", DatabaseUse.SORT_BY_DATE_CREATING);
-    }
 
     @Override
     public void deleteNote(int position) {
-        int id = DatabaseUse.getNoteDbIdByPosition(mActivity, position);
+        int id = DatabaseUse.getNoteDbIdByPosition(mActivity, position, mPreferences.loadSortType());
         DatabaseUse.deleteNote(id, mActivity);
         EventBus.getBus().post(new UpdateNotesListEvent(DatabaseUse.SORT_BY_DATE_CREATING));
     }
