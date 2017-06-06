@@ -21,7 +21,7 @@ public class MainPresenter implements MainView.Action {
     @Override
     public List<NoteRecyclerPojo> getAllNotesRecyclerPojo() {
         ArrayList<NoteRecyclerPojo> noteRecyclerPojos = new ArrayList<>();
-        List<NotePojo> notePojos = DatabaseUse.getAllNotes(mActivity.getActivity());
+        List<NotePojo> notePojos = DatabaseUse.getAllNotes(mActivity);
 
         for (int i = 0; i < notePojos.size(); i++){
             noteRecyclerPojos.add(new NoteRecyclerPojo(
@@ -33,6 +33,12 @@ public class MainPresenter implements MainView.Action {
         return noteRecyclerPojos;
     }
 
+    @Override
+    public void deleteNote(int position) {
+        int id = DatabaseUse.getNoteDbIdByPosition(mActivity, position);
+        DatabaseUse.deleteNote(id, mActivity);
+        EventBus.getBus().post(new UpdateNotesListEvent());
+    }
 
 
     @Override
@@ -42,7 +48,7 @@ public class MainPresenter implements MainView.Action {
 
     @Override
     public void onTouchClearNotes() {
-        DatabaseUse.clearNotes(mActivity.getActivity());
+        DatabaseUse.clearNotes(mActivity);
         EventBus.getBus().post(new UpdateNotesListEvent());
     }
 }

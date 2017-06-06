@@ -8,6 +8,8 @@ public interface MainView {
     interface Action {
         List<NoteRecyclerPojo> getAllNotesRecyclerPojo();
 
+        void deleteNote(int position);
+
         void releasePresenter();
 
         void onTouchClearNotes();

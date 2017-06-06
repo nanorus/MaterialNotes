@@ -38,10 +38,20 @@ public final class DatabaseUse {
         cv.put(DatabaseContract.DatabaseEntry.COLUMN_NAME_DESCRIPTION, notePojo.getDescription());
         cv.put(DatabaseContract.DatabaseEntry.COLUMN_NAME_PRIORITY, notePojo.getPriority());
 
-         db.insert(DatabaseContract.DatabaseEntry.TABLE_NAME_NOTES, null, cv);
+        db.insert(DatabaseContract.DatabaseEntry.TABLE_NAME_NOTES, null, cv);
 
         Toast.makeText(context, "Note added", Toast.LENGTH_SHORT).show();
 
+    }
+
+    public static void deleteNote(int id, Context context) {
+        DatabaseHelper databaseHelper = new DatabaseHelper(context);
+        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+
+        db.delete(DatabaseContract.DatabaseEntry.TABLE_NAME_NOTES,
+                DatabaseContract.DatabaseEntry.COLUMN_NAME_ID+"=?",
+                new String[]{String.valueOf(id)});
+        Toast.makeText(context, "Note deleted", Toast.LENGTH_SHORT).show();
     }
 
     public static List<NotePojo> getAllNotes(Context context) {

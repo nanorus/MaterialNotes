@@ -1,6 +1,8 @@
 package com.example.nanorus.todo.view.ui.adapters;
 
+import android.content.DialogInterface;
 import android.graphics.Color;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,6 +49,7 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
                 break;
         }
 
+
     }
 
     @Override
@@ -64,6 +67,7 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
             name = (TextView) itemView.findViewById(R.id.list_item_note_name);
             priority = (TextView) itemView.findViewById(R.id.list_item_note_tv_priority);
             priority_color = (ImageView) itemView.findViewById(R.id.list_item_note_iv_priority_color);
+
         }
     }
 }

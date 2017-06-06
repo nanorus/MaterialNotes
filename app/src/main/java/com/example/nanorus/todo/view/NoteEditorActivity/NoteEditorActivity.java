@@ -85,6 +85,7 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
     @Override
     protected void onDestroy() {
         mPresenter.releasePresenter();
+
         mPresenter = null;
         super.onDestroy();
     }
