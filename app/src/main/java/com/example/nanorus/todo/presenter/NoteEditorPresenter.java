@@ -34,8 +34,7 @@ public class NoteEditorPresenter implements NoteEditorView.Action {
                     break;
             }
 
-
-            EventBus.getBus().post(new UpdateNotesListEvent());
+            EventBus.getBus().post(new UpdateNotesListEvent(DatabaseUse.SORT_BY_DATE_CREATING));
             mActivity.onBackPressed();
 
         } catch (java.lang.NumberFormatException e) {
@@ -51,7 +50,7 @@ public class NoteEditorPresenter implements NoteEditorView.Action {
         int id = DatabaseUse.getNoteDbIdByPosition(mActivity, position);
         DatabaseUse.deleteNote(id, mActivity);
         mActivity.onBackPressed();
-        EventBus.getBus().post(new UpdateNotesListEvent());
+        EventBus.getBus().post(new UpdateNotesListEvent(DatabaseUse.SORT_BY_DATE_CREATING));
     }
 
 

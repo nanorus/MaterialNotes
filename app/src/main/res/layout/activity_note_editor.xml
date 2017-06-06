@@ -102,15 +102,24 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
-                <ImageView
-                    android:id="@+id/note_editor_iv_delete"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentTop="true"
-                    app:srcCompat="@android:drawable/ic_menu_delete"/>
+                    <TextView
+                        android:id="@+id/note_editor_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:text="Title"
+                        android:textColor="@android:color/black"
+                        android:textSize="18sp"/>
+
+                    <ImageView
+                        android:id="@+id/note_editor_iv_delete"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentTop="true"
+                        app:srcCompat="@android:drawable/ic_menu_delete"/>
                 </RelativeLayout>
             </android.support.v7.widget.Toolbar>
 

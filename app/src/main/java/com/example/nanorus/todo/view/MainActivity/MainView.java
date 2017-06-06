@@ -6,7 +6,11 @@ import java.util.List;
 
 public interface MainView {
     interface Action {
-        List<NoteRecyclerPojo> getAllNotesRecyclerPojo();
+        List<NoteRecyclerPojo> getAllNotesRecyclerPojo(int sortBy);
+
+        void saveSortType(int sortType);
+
+        int loadSortType();
 
         void deleteNote(int position);
 
@@ -19,6 +23,6 @@ public interface MainView {
     interface View {
         MainActivity getActivity();
 
-        void updateNotesList();
+        void updateNotesList(int sortBy);
     }
 }

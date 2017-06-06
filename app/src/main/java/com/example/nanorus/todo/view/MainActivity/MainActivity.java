@@ -18,13 +18,24 @@ import android.widget.ImageView;
 import com.example.nanorus.nanojunior.R;
 import com.example.nanorus.todo.bus.EventBus;
 import com.example.nanorus.todo.bus.event.UpdateNotesListEvent;
+import com.example.nanorus.todo.model.database.DatabaseUse;
 import com.example.nanorus.todo.model.pojo.NoteRecyclerPojo;
 import com.example.nanorus.todo.presenter.MainPresenter;
 import com.example.nanorus.todo.view.NoteEditorActivity.NoteEditorActivity;
 import com.example.nanorus.todo.view.ui.adapters.NotesRecyclerViewAdapter;
 import com.example.nanorus.todo.view.ui.recyclerView.ItemClickSupport;
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.squareup.otto.Subscribe;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements MainView.View {
@@ -35,10 +46,6 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
     SwipeRefreshLayout mSwipeRefresh;
     ImageView tb_clear;
     ImageView list_item_note_iv_priority_color;
-
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
         tb_clear = (ImageView) findViewById(R.id.main_tb_clear);
         list_item_note_iv_priority_color = (ImageView) findViewById(R.id.list_item_note_iv_priority_color);
 
+
         LinearLayoutManager manager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         mNotesList.setLayoutManager(manager);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mNotesList.getContext(),
@@ -64,10 +72,7 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
         ItemClickSupport.addTo(mNotesList).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                Intent intent = new Intent(getActivity(), NoteEditorActivity.class);
-                intent.putExtra("type", NoteEditorActivity.INTENT_TYPE_UPDATE);
-                intent.putExtra("position", position);
-                startActivity(intent);
+                goNoteEditorActivity(NoteEditorActivity.INTENT_TYPE_UPDATE, position);
             }
         });
         ItemClickSupport.addTo(mNotesList).setOnItemLongClickListener(new ItemClickSupport.OnItemLongClickListener() {
@@ -102,10 +107,10 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
 
 
         EventBus.getBus().register(this);
-        EventBus.getBus().post(new UpdateNotesListEvent());
+        EventBus.getBus().post(new UpdateNotesListEvent(mPresenter.loadSortType()));
 
         setListeners();
-
+        setDrawer();
 
     }
 
@@ -116,15 +121,16 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
     }
 
     @Override
-    public void updateNotesList() {
-        List<NoteRecyclerPojo> list = mPresenter.getAllNotesRecyclerPojo();
+    public void updateNotesList(int sortBy) {
+
+                List<NoteRecyclerPojo> list = mPresenter.getAllNotesRecyclerPojo(sortBy);
         NotesRecyclerViewAdapter adapter = new NotesRecyclerViewAdapter(list);
         mNotesList.setAdapter(adapter);
     }
 
     @Subscribe
     public void updateNotesListListener(UpdateNotesListEvent event) {
-        updateNotesList();
+        updateNotesList(event.getSortBy());
     }
 
     @Override
@@ -135,7 +141,8 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
         super.onDestroy();
     }
 
-    void setListeners() {
+
+    private void setListeners() {
         tb_clear.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -166,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
         mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                EventBus.getBus().post(new UpdateNotesListEvent());
+                EventBus.getBus().post(new UpdateNotesListEvent(mPresenter.loadSortType()));
                 mSwipeRefresh.setRefreshing(false);
             }
         });
@@ -174,11 +181,85 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.putExtra("type", NoteEditorActivity.INTENT_TYPE_ADD);
-                startActivity(new Intent(getActivity(), NoteEditorActivity.class));
+                goNoteEditorActivity(NoteEditorActivity.INTENT_TYPE_ADD, 0);
             }
         });
+    }
+
+    private void goNoteEditorActivity(int type, int position) {
+        Intent intent = new Intent();
+        intent.putExtra("type", type);
+        if (type == NoteEditorActivity.INTENT_TYPE_UPDATE)
+            intent.putExtra("position", position);
+        startActivity(new Intent(getActivity(), NoteEditorActivity.class));
+    }
+
+    private void setDrawer() {
+
+        // Create the AccountHeader
+        AccountHeader headerResult = new AccountHeaderBuilder()
+                .withActivity(this)
+                .withHeaderBackground(R.drawable.header)
+                //.addProfiles(
+                //        new ProfileDrawerItem().withName("Mike Penz").withEmail("mikepenz@gmail.com").withIcon(getResources().getDrawable(R.drawable.profile))
+                //)
+                .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
+                    @Override
+                    public boolean onProfileChanged(View view, IProfile profile, boolean currentProfile) {
+                        return false;
+                    }
+                })
+                .build();
+
+
+        ArrayList<IDrawerItem> items = new ArrayList<>();
+        items.add(new PrimaryDrawerItem().withIdentifier(21).withName("Date of creating"));
+        items.add(new PrimaryDrawerItem().withIdentifier(22).withName("Name"));
+        items.add(new PrimaryDrawerItem().withIdentifier(23).withName("Priority"));
+        items.add(new PrimaryDrawerItem().withIdentifier(24).withName("Date and time"));
+
+        PrimaryDrawerItem addNote = new PrimaryDrawerItem().withIdentifier(1).withName("Add note");
+        SecondaryDrawerItem sort = new SecondaryDrawerItem().withIdentifier(2).withName("Sort by").withSubItems(items);
+
+        Drawer result = new DrawerBuilder()
+                .withActivity(this)
+                .withToolbar(mToolbar)
+                .withAccountHeader(headerResult)
+                .addDrawerItems(
+                        addNote,
+                        new DividerDrawerItem(),
+                        sort
+                )
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        // do something with the clicked item :D
+                        switch ((int) drawerItem.getIdentifier()) {
+                            case 1:
+                                goNoteEditorActivity(NoteEditorActivity.INTENT_TYPE_ADD, 0);
+                                break;
+                            case 21:
+                                mPresenter.saveSortType(DatabaseUse.SORT_BY_DATE_CREATING);
+                                EventBus.getBus().post(new UpdateNotesListEvent(DatabaseUse.SORT_BY_DATE_CREATING));
+                                break;
+                            case 22:
+                                mPresenter.saveSortType(DatabaseUse.SORT_BY_NAME);
+                                EventBus.getBus().post(new UpdateNotesListEvent(DatabaseUse.SORT_BY_NAME));
+                                break;
+                            case 23:
+                                mPresenter.saveSortType(DatabaseUse.SORT_BY_PRIORITY);
+                                EventBus.getBus().post(new UpdateNotesListEvent(DatabaseUse.SORT_BY_PRIORITY));
+                                break;
+                            case 24:
+                                mPresenter.saveSortType(DatabaseUse.SORT_BY_DATE_TIME);
+                                EventBus.getBus().post(new UpdateNotesListEvent(DatabaseUse.SORT_BY_DATE_TIME));
+                                break;
+                        }
+
+                        return false;
+                    }
+                })
+                .build();
     }
 
 }

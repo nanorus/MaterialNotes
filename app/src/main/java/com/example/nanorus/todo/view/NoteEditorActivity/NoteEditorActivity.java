@@ -12,6 +12,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.nanorus.nanojunior.R;
 import com.example.nanorus.todo.presenter.NoteEditorPresenter;
@@ -22,6 +23,7 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
     Toolbar mToolbar;
     FloatingActionButton mFab;
     EditText editor_et_noteName;
+    TextView mTitle;
     EditText editor_et_description;
     EditText editor_et_priority;
     ImageView note_editor_iv_delete;
@@ -46,6 +48,7 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mCollapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.noteEditor_collapsing);
+        mTitle = (TextView) findViewById(R.id.note_editor_title);
         editor_et_noteName = (EditText) findViewById(R.id.editor_et_noteName);
         editor_et_description = (EditText) findViewById(R.id.editor_et_description);
         editor_et_priority = (EditText) findViewById(R.id.note_editor_et_priority);
@@ -54,11 +57,14 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
 
         switch (mType) {
             case INTENT_TYPE_ADD:
-                mCollapsingToolbarLayout.setTitle("Add note");
+                mTitle.setText("Add note");
+                // mCollapsingToolbarLayout.setTitle("Add note");
                 note_editor_iv_delete.setVisibility(View.INVISIBLE);
+
                 break;
             case INTENT_TYPE_UPDATE:
-                mCollapsingToolbarLayout.setTitle("Edit note");
+                mTitle.setText("Edit note");
+                // mCollapsingToolbarLayout.setTitle("Edit note");
                 mPosition = intent.getIntExtra("position", 0);
 
                 mPresenter.setFields(mPosition);

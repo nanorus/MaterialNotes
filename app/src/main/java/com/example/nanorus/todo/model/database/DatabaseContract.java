@@ -8,6 +8,9 @@ public final class DatabaseContract {
     }
 
     public static abstract class DatabaseEntry implements BaseColumns {
+
+
+
         public static final String TABLE_NAME_NOTES = "notes";
         public static final String COLUMN_NAME_ID = "_id";
         public static final String COLUMN_NAME_NAME = "name";

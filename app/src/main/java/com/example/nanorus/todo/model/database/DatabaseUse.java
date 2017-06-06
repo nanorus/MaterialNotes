@@ -12,6 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class DatabaseUse {
+    public final static int SORT_BY_DATE_CREATING = 0;
+    public final static int SORT_BY_NAME = 1;
+    public final static int SORT_BY_PRIORITY = 2;
+    public final static int SORT_BY_DATE_TIME = 3;
+
 
     public static void updateNote(NotePojo notePojo, Context context, int id) {
         // UPDATE NOTE SET name,  description
@@ -49,16 +54,36 @@ public final class DatabaseUse {
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
 
         db.delete(DatabaseContract.DatabaseEntry.TABLE_NAME_NOTES,
-                DatabaseContract.DatabaseEntry.COLUMN_NAME_ID+"=?",
+                DatabaseContract.DatabaseEntry.COLUMN_NAME_ID + "=?",
                 new String[]{String.valueOf(id)});
         Toast.makeText(context, "Note deleted", Toast.LENGTH_SHORT).show();
     }
 
-    public static List<NotePojo> getAllNotes(Context context) {
+    public static List<NotePojo> getAllNotes(Context context, int sortBy) {
         DatabaseHelper databaseHelper = new DatabaseHelper(context);
         SQLiteDatabase db = databaseHelper.getReadableDatabase();
 
-        Cursor c = db.query(DatabaseContract.DatabaseEntry.TABLE_NAME_NOTES, new String[]{"*"}, null, null, null, null, null);
+        String orderBy;
+
+        switch (sortBy) {
+            case DatabaseUse.SORT_BY_DATE_CREATING:
+                orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_ID;
+                break;
+            case DatabaseUse.SORT_BY_NAME:
+                orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_NAME;
+                break;
+            case DatabaseUse.SORT_BY_PRIORITY:
+                orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_PRIORITY;
+                break;
+            case DatabaseUse.SORT_BY_DATE_TIME:
+                orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_ID;
+                break;
+            default:
+                orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_ID;
+                break;
+        }
+
+        Cursor c = db.query(DatabaseContract.DatabaseEntry.TABLE_NAME_NOTES, new String[]{"*"}, null, null, null, null, orderBy);
 
         ArrayList<NotePojo> notesList = new ArrayList<>();
         if (c.moveToFirst()) {
