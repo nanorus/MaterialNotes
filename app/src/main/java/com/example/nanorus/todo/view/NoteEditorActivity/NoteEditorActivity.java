@@ -92,10 +92,10 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
 
         switch (mType) {
             case INTENT_TYPE_ADD:
-                mTitle.setText("Add note");
+                mTitle.setText(R.string.toolbar_title_add);
                 break;
             case INTENT_TYPE_UPDATE:
-                mTitle.setText("Edit note");
+                mTitle.setText(R.string.toolbar_title_edit);
                 mPosition = intent.getIntExtra("position", 0);
 
                 mPresenter.setFields(mPosition);

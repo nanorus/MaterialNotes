@@ -20,7 +20,7 @@ public class PreferenceUse {
     public void saveSortType(int sortType) {
         SharedPreferences.Editor editor = mPreferences.edit();
         editor.putInt("notesSortType", sortType);
-        editor.commit();
+        editor.apply();
     }
 
     public int loadSortType() {

@@ -2,5 +2,5 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/optionsMenuItem_clear"
-        android:title="Clear notes"/>
+        android:title="@string/toolbar_editor_menu_clear_notes"/>
 </menu>

@@ -15,7 +15,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 
 import com.example.nanorus.nanojunior.R;
 import com.example.nanorus.todo.bus.EventBus;
@@ -47,7 +46,6 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
     FloatingActionButton mFab;
     RecyclerView mNotesList;
     SwipeRefreshLayout mSwipeRefresh;
-    ImageView list_item_note_iv_priority_color;
     private PreferenceUse mPreferences;
 
 
@@ -94,7 +92,6 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mNotesList = (RecyclerView) findViewById(R.id.main_rv_notesList);
-        list_item_note_iv_priority_color = (ImageView) findViewById(R.id.list_item_note_iv_priority_color);
 
 
         LinearLayoutManager manager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);

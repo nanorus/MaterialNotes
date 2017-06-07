@@ -43,13 +43,13 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_below="@+id/editor_et_noteName"
-                    android:text="Priority"/>
+                    android:text="@string/noteEditor_text_priority"/>
 
                 <TextView
                     android:id="@+id/textView3"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Task"
+                    android:text="@string/noteEditor_text_task"
                     app:layout_collapseMode="parallax"
                     />
 
@@ -64,7 +64,7 @@
                     android:layout_below="@+id/textView2"
                     android:ems="10"
                     android:inputType="textPersonName"
-                    android:text="2"/>
+                    android:text=""/>
 
                 <EditText
                     android:id="@+id/editor_et_noteName"
@@ -75,7 +75,7 @@
                     android:layout_below="@+id/textView3"
                     android:ems="10"
                     android:inputType="textPersonName"
-                    android:text="Начать жизнь с нуля"
+                    android:text="@string/noteEditor_text_start"
                     app:layout_collapseMode="parallax"/>
 
                 <Button
@@ -86,7 +86,7 @@
                     android:layout_alignParentStart="true"
                     android:layout_below="@+id/note_editor_et_priority"
                     android:background="#00000000"
-                    android:text="date and time"/>
+                    android:text="@string/noteEditor_text_btn_date_and_time"/>
 
             </RelativeLayout>
 
@@ -95,7 +95,6 @@
                 android:id="@+id/note_editor_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:elevation="0dp"
                 app:layout_collapseMode="pin"
                 app:layout_collapseParallaxMultiplier="1.0">
 
@@ -108,7 +107,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
-                        android:text="Title"
+                        android:text="@string/noteEditor_text_title"
                         android:textColor="@android:color/black"
                         android:textSize="18sp"/>
 
@@ -132,7 +131,6 @@
             android:layout_height="wrap_content"
             android:lineSpacingExtra="8dp"
             android:orientation="vertical"
-            android:text="aaa"
             android:textSize="20sp"
             >
 
@@ -140,7 +138,7 @@
                 android:id="@+id/textView4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Description "/>
+                android:text="@string/noteEditor_text_description"/>
 
             <EditText
                 android:id="@+id/editor_et_description"
@@ -148,7 +146,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:inputType="textMultiLine"
-                android:text="Для начала я хотел бы бросить компьютерные игры.\nНаконец-то заняться более разумными делами."
+                android:text="@string/noteEditor_text_start_description"
                 android:textSize="14sp"/>
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
