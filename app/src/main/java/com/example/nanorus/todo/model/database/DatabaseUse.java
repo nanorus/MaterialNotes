@@ -117,13 +117,12 @@ public final class DatabaseUse {
                 DatabaseContract.DatabaseEntry.COLUMN_NAME_ID + "=?", new String[]{String.valueOf(id)}, null, null, null);
 
         if (c.moveToFirst()) {
-            NotePojo notePojo = new NotePojo(
+            return new NotePojo(
                     c.getString(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_NAME)),
                     null,
                     c.getString(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_DESCRIPTION)),
                     c.getInt(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_PRIORITY))
             );
-            return notePojo;
 
         } else return null;
     }

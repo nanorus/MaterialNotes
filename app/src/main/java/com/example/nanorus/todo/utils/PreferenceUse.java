@@ -14,7 +14,7 @@ public class PreferenceUse {
 
     public PreferenceUse(Context context) {
         mContext = context;
-        mPreferences = context.getSharedPreferences("name", Context.MODE_PRIVATE);
+        mPreferences = mContext.getSharedPreferences("name", Context.MODE_PRIVATE);
     }
 
     public void saveSortType(int sortType) {
