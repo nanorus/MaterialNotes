@@ -1,5 +1,6 @@
 package com.example.nanorus.todo.view.MainActivity;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,7 +12,8 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.MotionEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -45,9 +47,39 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
     FloatingActionButton mFab;
     RecyclerView mNotesList;
     SwipeRefreshLayout mSwipeRefresh;
-    ImageView tb_clear;
     ImageView list_item_note_iv_priority_color;
     private PreferenceUse mPreferences;
+
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.toolbar_main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.optionsMenuItem_clear:
+                showAlert(getActivity(), "Clear ALL notes?", "This will remove all notes and cannot be undone.", "Delete", "Cancel",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mPresenter.onTouchClearNotes();
+                            }
+                        },
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }
+                );
+                break;
+        }
+        return false;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +94,6 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mNotesList = (RecyclerView) findViewById(R.id.main_rv_notesList);
-        tb_clear = (ImageView) findViewById(R.id.main_tb_clear);
         list_item_note_iv_priority_color = (ImageView) findViewById(R.id.list_item_note_iv_priority_color);
 
 
@@ -81,29 +112,20 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
         ItemClickSupport.addTo(mNotesList).setOnItemLongClickListener(new ItemClickSupport.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClicked(RecyclerView recyclerView, final int position, View v) {
-                final CharSequence[] items = {"Yes", "No"};
-                final int DIALOG_YES = 0;
-                final int DIALOG_NO = 1;
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-
-                builder.setTitle("Delete the note?");
-                builder.setItems(items, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int item) {
-                        switch (item) {
-                            case DIALOG_YES:
+                showAlert(getActivity(), "Delete this note?", "Delete is an irreversible action.", "Delete", "Cancel",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
                                 mPresenter.deleteNote(position);
-                                break;
-                            case DIALOG_NO:
+                            }
+                        },
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
-                                break;
+                            }
                         }
-
-                    }
-                });
-                builder.show();
-
+                );
                 return false;
             }
         });
@@ -117,6 +139,21 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
 
     }
 
+
+    @Override
+    public void showAlert(Context context, String title, String message, String buttonPositiveTitle, String buttonNegativeTitle, AlertDialog.OnClickListener positiveOnClickListener, AlertDialog.OnClickListener negativeOnClickListener) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+        if (title != null)
+            builder.setTitle(title);
+        if (message != null)
+            builder.setMessage(message);
+
+        builder.setPositiveButton(buttonPositiveTitle, positiveOnClickListener);
+        builder.setNegativeButton(buttonNegativeTitle, negativeOnClickListener);
+        builder.show();
+
+    }
 
     @Override
     public MainActivity getActivity() {
@@ -146,32 +183,7 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
 
 
     private void setListeners() {
-        tb_clear.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                CharSequence[] items = {"Yes", "No"};
-                final int DIALOG_YES = 0;
-                final int DIALOG_NO = 1;
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle("Delete ALL notes?");
-                builder.setItems(items, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        switch (which) {
-                            case DIALOG_YES:
-                                mPresenter.onTouchClearNotes();
-                                break;
-                            case DIALOG_NO:
-                                dialog.dismiss();
-                                break;
-                        }
-                    }
-                });
-                builder.show();
-                return false;
-            }
-        });
 
         mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override

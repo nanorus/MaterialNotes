@@ -20,11 +20,12 @@
             android:layout_height="wrap_content"
             android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"
+            app:elevation="3dp"
             app:expandedTitleGravity="top"
             app:expandedTitleMarginStart="76dp"
             app:expandedTitleMarginTop="17dp"
             app:expandedTitleTextAppearance="@style/NoteEditorCollapsingToolbarExpanded"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
             app:title="Note Editor"
             >
 
@@ -111,19 +112,12 @@
                         android:textColor="@android:color/black"
                         android:textSize="18sp"/>
 
-                    <ImageView
-                        android:id="@+id/note_editor_iv_delete"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentBottom="true"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentTop="true"
-                        app:srcCompat="@android:drawable/ic_menu_delete"/>
+
                 </RelativeLayout>
             </android.support.v7.widget.Toolbar>
-
         </android.support.design.widget.CollapsingToolbarLayout>
+
+
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.widget.NestedScrollView
