@@ -2,47 +2,47 @@ package com.example.nanorus.todo.model.pojo;
 
 public class NotePojo {
 
-    private String name;
-    private String date;
-    private String description;
-    private int priority;
+    private String mName;
+    private DateTimePojo mDateTimePojo;
+    private String mDescription;
+    private int mPriority;
 
-    public NotePojo(String name, String date, String description, int priority) {
-        this.name = name;
-        this.date = date;
-        this.description = description;
-        this.priority = priority;
+    public NotePojo(String name, DateTimePojo dateTimePojo, String description, int priority) {
+        this.mName = name;
+        this.mDateTimePojo = dateTimePojo;
+        this.mDescription = description;
+        this.mPriority = priority;
     }
 
     public String getName() {
-        return name;
+        return mName;
     }
 
     public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
+        this.mName = name;
     }
 
     public String getDescription() {
-        return description;
+        return mDescription;
+    }
+
+    public DateTimePojo getDateTimePojo() {
+        return mDateTimePojo;
+    }
+
+    public void setDateTimePojo(DateTimePojo dateTimePojo) {
+        mDateTimePojo = dateTimePojo;
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        this.mDescription = description;
     }
 
     public int getPriority() {
-        return priority;
+        return mPriority;
     }
 
     public void setPriority(int priority) {
-        this.priority = priority;
+        this.mPriority = priority;
     }
 }

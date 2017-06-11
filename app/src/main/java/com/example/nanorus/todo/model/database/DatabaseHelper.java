@@ -29,7 +29,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             String sql_insert_priority =
                     "INSERT INTO " + DatabaseContract.DatabaseEntry.TABLE_NAME_NOTES +
-                    " (" + DatabaseContract.DatabaseEntry.COLUMN_NAME_PRIORITY + ") VALUES (1)";
+                            " (" + DatabaseContract.DatabaseEntry.COLUMN_NAME_PRIORITY + ") VALUES (1)";
+
+
+            db.execSQL(sql_add_column);
+            db.execSQL(sql_insert_priority);
+        } else if (newVersion == 3 && oldVersion == 2) {
+            String sql_add_column =
+                    "ALTER TABLE " + DatabaseContract.DatabaseEntry.TABLE_NAME_NOTES + " ADD COLUMN " +
+                            DatabaseContract.DatabaseEntry.COLUMN_NAME_DATE_TIME + " TEXT";
+
+            String sql_insert_priority =
+                    "INSERT INTO " + DatabaseContract.DatabaseEntry.TABLE_NAME_NOTES +
+                            " (" + DatabaseContract.DatabaseEntry.COLUMN_NAME_DATE_TIME + ") VALUES (" +
+                            DatabaseContract.DatabaseEntry.FIRST_NOTE_DATE_TIME
+                            + ")";
 
 
             db.execSQL(sql_add_column);

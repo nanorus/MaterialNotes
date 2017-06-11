@@ -27,12 +27,12 @@
             android:id="@+id/list_item_note_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_marginLeft="11dp"
-            android:layout_marginStart="11dp"
-            android:layout_marginTop="14dp"
+            android:layout_marginTop="13dp"
             android:text="@string/noteList_item_text_first_user_s_note"
-            android:textSize="18sp"/>
+            android:textSize="18sp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"/>
 
         <TextView
             android:id="@+id/list_item_note_tv_priority"
@@ -45,13 +45,14 @@
     </RelativeLayout>
 
     <ImageView
-        android:layout_margin="5dp"
         android:id="@+id/list_item_note_iv_drawText"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"/>
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        />
 
 </RelativeLayout>

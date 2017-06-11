@@ -6,8 +6,51 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/note_editor_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:id="@+id/noteEditor_nested_linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:lineSpacingExtra="8dp"
+            android:orientation="vertical"
+            android:textSize="20sp">
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/noteEditor_text_description"/>
+
+            <EditText
+                android:id="@+id/editor_et_description"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="-3.5dp"
+                android:ems="10"
+                android:gravity="top"
+                android:inputType="textMultiLine"
+                android:maxLength="500"
+                android:minLines="7"
+                android:text="@string/noteEditor_text_start_description"
+                android:textSize="14sp"/>
+
+            <TextView
+                android:id="@+id/editor_tv_description_length"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:text="TextView"/>
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+
     <android.support.design.widget.AppBarLayout
-        android:id="@+id/main.appbar"
+        android:id="@+id/noteEditor.appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
@@ -39,18 +82,36 @@
                     android:id="@+id/textView2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
                     android:layout_alignParentLeft="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@+id/note_editor_et_priority"
+                    android:layout_marginTop="10dp"
+                    android:text="Date and time"/>
+
+                <TextView
+                    android:id="@+id/textView5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentRight="true"
                     android:layout_alignParentStart="true"
                     android:layout_below="@+id/editor_et_noteName"
+                    android:layout_marginTop="10dp"
                     android:text="@string/noteEditor_text_priority"/>
 
                 <TextView
                     android:id="@+id/textView3"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginTop="15dp"
                     android:text="@string/noteEditor_text_task"
-                    app:layout_collapseMode="parallax"
-                    />
+                    app:layout_collapseMode="parallax"/>
 
                 <EditText
                     android:id="@+id/note_editor_et_priority"
@@ -60,10 +121,11 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentStart="true"
-                    android:layout_below="@+id/textView2"
+                    android:layout_below="@+id/textView5"
+                    android:layout_marginLeft="-3.5dp"
                     android:ems="10"
                     android:inputType="textPersonName"
-                    android:text=""/>
+                    android:text="@string/noteEditor_text_start_priority"/>
 
                 <EditText
                     android:id="@+id/editor_et_noteName"
@@ -72,20 +134,28 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_below="@+id/textView3"
+                    android:layout_marginLeft="-3.5dp"
                     android:ems="10"
                     android:inputType="textPersonName"
+                    android:maxLength="40"
                     android:text="@string/noteEditor_text_start"
                     app:layout_collapseMode="parallax"/>
 
-                <Button
-                    android:id="@+id/editor_btn_time"
-                    android:layout_width="match_parent"
+
+                <EditText
+                    android:id="@+id/editor_et_time"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
                     android:layout_alignParentLeft="true"
+                    android:layout_alignParentRight="true"
                     android:layout_alignParentStart="true"
-                    android:layout_below="@+id/note_editor_et_priority"
-                    android:background="#00000000"
+                    android:layout_below="@+id/textView2"
+                    android:layout_marginLeft="-3.5dp"
+                    android:ems="10"
+                    android:focusable="false"
                     android:text="@string/noteEditor_text_btn_date_and_time"/>
+
 
             </RelativeLayout>
 
@@ -101,14 +171,51 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
-                    <TextView
-                        android:id="@+id/note_editor_title"
+                    <RelativeLayout
+                        android:id="@+id/noteEditor_rl_tb_buttons"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:text="@string/noteEditor_text_title"
-                        android:textColor="@android:color/black"
-                        android:textSize="18sp"/>
+                        android:layout_height="match_parent"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true">
+
+                        <ImageButton
+                            android:id="@+id/editor_btn_save"
+                            android:layout_width="50dp"
+                            android:layout_height="match_parent"
+                            android:layout_alignParentBottom="true"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentTop="true"
+                            android:background="@android:color/transparent"
+                            android:src="@drawable/ic_check_black_24dp"
+                            />
+
+                        <ImageButton
+                            android:id="@+id/editor_btn_delete"
+                            android:layout_width="50dp"
+                            android:layout_height="match_parent"
+                            android:layout_alignParentBottom="true"
+                            android:layout_alignParentTop="true"
+                            android:layout_toLeftOf="@+id/editor_btn_save"
+                            android:layout_toStartOf="@+id/editor_btn_save"
+                            android:background="@android:color/transparent"
+                            android:src="@drawable/ic_delete_black_24dp"
+                            />
+
+
+                        <TextView
+                            android:id="@+id/note_editor_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentBottom="true"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentTop="true"
+                            android:gravity="center_vertical"
+                            android:text="@string/noteEditor_text_title"
+                            android:textColor="@android:color/black"
+                            android:textSize="18sp"/>
+                    </RelativeLayout>
 
 
                 </RelativeLayout>
@@ -118,45 +225,4 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.widget.NestedScrollView
-        android:id="@+id/note_editor_scroll"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="5dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:lineSpacingExtra="8dp"
-            android:orientation="vertical"
-            android:textSize="20sp"
-            >
-
-            <TextView
-                android:id="@+id/textView4"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/noteEditor_text_description"/>
-
-            <EditText
-                android:id="@+id/editor_et_description"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:inputType="textMultiLine"
-                android:text="@string/noteEditor_text_start_description"
-                android:textSize="14sp"/>
-        </LinearLayout>
-    </android.support.v4.widget.NestedScrollView>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/editor_fab_go"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="15dp"
-        android:src="@drawable/ic_send_black_24dp"
-        app:backgroundTint="@color/colorAccent"
-        app:layout_anchor="@id/note_editor_scroll"
-        app:layout_anchorGravity="bottom|right|end"/>
 </android.support.design.widget.CoordinatorLayout>

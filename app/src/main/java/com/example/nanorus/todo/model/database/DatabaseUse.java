@@ -6,9 +6,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.widget.Toast;
 
+import com.example.nanorus.todo.model.pojo.DateTimePojo;
 import com.example.nanorus.todo.model.pojo.NotePojo;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public final class DatabaseUse {
@@ -27,6 +31,8 @@ public final class DatabaseUse {
         values.put(DatabaseContract.DatabaseEntry.COLUMN_NAME_NAME, notePojo.getName());
         values.put(DatabaseContract.DatabaseEntry.COLUMN_NAME_DESCRIPTION, notePojo.getDescription());
         values.put(DatabaseContract.DatabaseEntry.COLUMN_NAME_PRIORITY, notePojo.getPriority());
+        // put date. '2007-01-01 10:00:00'
+
 
         db.update(DatabaseContract.DatabaseEntry.TABLE_NAME_NOTES, values,
                 DatabaseContract.DatabaseEntry.COLUMN_NAME_ID + "=" + id, null);
@@ -117,9 +123,24 @@ public final class DatabaseUse {
                 DatabaseContract.DatabaseEntry.COLUMN_NAME_ID + "=?", new String[]{String.valueOf(id)}, null, null, null);
 
         if (c.moveToFirst()) {
+
+            // getting date
+
+            String dateString = c.getString(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_DATE_TIME));
+            Date date  = null;
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            try {
+                date = format.parse(dateString);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            DateTimePojo dateTimePojo = null;
+            if (date != null) {
+                 dateTimePojo = new DateTimePojo(date.getYear(), date.getMonth(), date.getDay(), date.getHours(), date.getMinutes());
+            }
             return new NotePojo(
                     c.getString(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_NAME)),
-                    null,
+                    dateTimePojo,
                     c.getString(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_DESCRIPTION)),
                     c.getInt(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_PRIORITY))
             );
@@ -160,7 +181,7 @@ public final class DatabaseUse {
         }
         Cursor c = db.rawQuery("SELECT * FROM " + DatabaseContract.DatabaseEntry.TABLE_NAME_NOTES +
                 " ORDER BY " + orderBy +
-                " LIMIT 1 OFFSET " + position , null);
+                " LIMIT 1 OFFSET " + position, null);
 
         int id = 1;
         if (c.moveToFirst()) {

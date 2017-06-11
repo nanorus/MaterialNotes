@@ -12,9 +12,8 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 
 import com.example.nanorus.nanojunior.R;
 import com.example.nanorus.todo.bus.EventBus;
@@ -48,44 +47,18 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
     SwipeRefreshLayout mSwipeRefresh;
     private PreferenceUse mPreferences;
 
+    ImageButton main_btn_clear_all;
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.toolbar_main_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.optionsMenuItem_clear:
-                showAlert(getActivity(), "Clear ALL notes?", "This will remove all notes and cannot be undone.", "Delete", "Cancel",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                mPresenter.onTouchClearNotes();
-                            }
-                        },
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        }
-                );
-                break;
-        }
-        return false;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mPreferences = new PreferenceUse(getActivity());
-
         mPresenter = new MainPresenter(getActivity());
+
+        main_btn_clear_all = (ImageButton) findViewById(R.id.main_btn_clear_all);
         mToolbar = (Toolbar) findViewById(R.id.main_toolbar);
         mFab = (FloatingActionButton) findViewById(R.id.main_fab_add);
         mSwipeRefresh = (SwipeRefreshLayout) findViewById(R.id.main_swipeRefresh);
@@ -159,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
 
     @Override
     public void updateNotesList(int sortBy) {
-
+        // loader start load list fromm sql
         List<NoteRecyclerPojo> list = mPresenter.getAllNotesRecyclerPojo(sortBy);
         NotesRecyclerViewAdapter adapter = new NotesRecyclerViewAdapter(list);
         mNotesList.setAdapter(adapter);
@@ -181,6 +154,25 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
 
     private void setListeners() {
 
+        main_btn_clear_all.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showAlert(getActivity(), "Clear ALL notes?", "This will remove all notes and cannot be undone.", "Delete", "Cancel",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mPresenter.onTouchClearNotes();
+                            }
+                        },
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }
+                );
+            }
+        });
 
         mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -213,7 +205,7 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
         // Create the AccountHeader
         AccountHeader headerResult = new AccountHeaderBuilder()
                 .withActivity(this)
-                .withHeaderBackground(R.drawable.header)
+                .withHeaderBackground(R.mipmap.header)
                 //.addProfiles(
                 //        new ProfileDrawerItem().withName("Mike Penz").withEmail("mikepenz@gmail.com").withIcon(getResources().getDrawable(R.drawable.profile))
                 //)
