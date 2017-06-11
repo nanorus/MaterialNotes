@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 2;
+    public static final int DATABASE_VERSION = 4;
     public static final String DATABASE_NAME = "todoDatabase.db";
 
     public DatabaseHelper(Context context) {
@@ -34,20 +34,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             db.execSQL(sql_add_column);
             db.execSQL(sql_insert_priority);
-        } else if (newVersion == 3 && oldVersion == 2) {
-            String sql_add_column =
-                    "ALTER TABLE " + DatabaseContract.DatabaseEntry.TABLE_NAME_NOTES + " ADD COLUMN " +
-                            DatabaseContract.DatabaseEntry.COLUMN_NAME_DATE_TIME + " TEXT";
+        } else if (newVersion == 4) {
 
-            String sql_insert_priority =
-                    "INSERT INTO " + DatabaseContract.DatabaseEntry.TABLE_NAME_NOTES +
-                            " (" + DatabaseContract.DatabaseEntry.COLUMN_NAME_DATE_TIME + ") VALUES (" +
-                            DatabaseContract.DatabaseEntry.FIRST_NOTE_DATE_TIME
-                            + ")";
+            db.execSQL("DROP TABLE " + DatabaseContract.DatabaseEntry.TABLE_NAME_NOTES);
 
-
-            db.execSQL(sql_add_column);
-            db.execSQL(sql_insert_priority);
+            onCreate(db);
         }
 
 

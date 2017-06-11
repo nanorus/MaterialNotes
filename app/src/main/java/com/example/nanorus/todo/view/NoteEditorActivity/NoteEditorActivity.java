@@ -163,6 +163,7 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
     }
 
     void setListeners() {
+        // day and time
         editor_et_dateTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -222,6 +223,8 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
         });
 
 
+
+        // description
         editor_et_description.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -247,9 +250,10 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
             }
         });
 
+
         switch (mType) {
             case INTENT_TYPE_ADD:
-
+                // save
                 btn_save.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

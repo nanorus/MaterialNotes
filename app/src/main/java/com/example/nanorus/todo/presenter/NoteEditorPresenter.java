@@ -22,7 +22,7 @@ public class NoteEditorPresenter implements NoteEditorView.Action {
     }
 
     @Override
-    public void onFabClicked(int type, int position, String name, String description, String priority,  DateTimePojo dateTimePojo) {
+    public void onFabClicked(int type, int position, String name, String description, String priority, DateTimePojo dateTimePojo) {
 
 
         try {
@@ -67,6 +67,11 @@ public class NoteEditorPresenter implements NoteEditorView.Action {
         mActivity.setPriority(String.valueOf(notePojo.getPriority()));
 
         // set date and time
+        setDateTime(notePojo.getDateTimePojo().getYear(), notePojo.getDateTimePojo().getMonth(),
+                notePojo.getDateTimePojo().getDay(), notePojo.getDateTimePojo().getHour(),
+                notePojo.getDateTimePojo().getMinute()
+        );
+
 
     }
 
@@ -91,7 +96,7 @@ public class NoteEditorPresenter implements NoteEditorView.Action {
     @Override
     public void setDateTime(int year, int month, int day, int hour, int minute) {
         String monthString;
-        switch (month){
+        switch (month) {
             case 0:
                 monthString = "Jan";
                 break;
@@ -132,9 +137,18 @@ public class NoteEditorPresenter implements NoteEditorView.Action {
                 monthString = "Jan";
                 break;
         }
+        String minuteString;
+        if (minute < 10) {
+            minuteString = String.valueOf(minute) + "0";
+        } else minuteString = String.valueOf(minute);
+
+        String hourString;
+        if (hour < 10) {
+            hourString = String.valueOf(hour) + "0";
+        } else hourString = String.valueOf(hour);
 
         String dateTime = String.valueOf(day) + " " + monthString + " " + String.valueOf(year) +
-                "   " + String.valueOf(hour) + ":" + String.valueOf(minute);
+                "   " + hourString + ":" + minuteString;
         mActivity.setDateTime(dateTime);
     }
 }

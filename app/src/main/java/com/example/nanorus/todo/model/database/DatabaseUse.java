@@ -12,6 +12,7 @@ import com.example.nanorus.todo.model.pojo.NotePojo;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -91,6 +92,7 @@ public final class DatabaseUse {
 
         Cursor c = db.query(DatabaseContract.DatabaseEntry.TABLE_NAME_NOTES, new String[]{"*"}, null, null, null, null, orderBy);
 
+
         ArrayList<NotePojo> notesList = new ArrayList<>();
         if (c.moveToFirst()) {
             notesList.add(new NotePojo(
@@ -124,10 +126,11 @@ public final class DatabaseUse {
 
         if (c.moveToFirst()) {
 
-            // getting date
+            // getting date ========================================
 
             String dateString = c.getString(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_DATE_TIME));
-            Date date  = null;
+
+            Date date = null;
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             try {
                 date = format.parse(dateString);
@@ -136,7 +139,15 @@ public final class DatabaseUse {
             }
             DateTimePojo dateTimePojo = null;
             if (date != null) {
-                 dateTimePojo = new DateTimePojo(date.getYear(), date.getMonth(), date.getDay(), date.getHours(), date.getMinutes());
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(date);
+                int year = cal.get(Calendar.YEAR);
+                int month = cal.get(Calendar.MONTH) + 1;
+                int day = cal.get(Calendar.DAY_OF_MONTH);
+                int hour = cal.get(Calendar.HOUR);
+                int minute = cal.get(Calendar.MINUTE);
+
+                dateTimePojo = new DateTimePojo(year, month, day, hour, minute);
             }
             return new NotePojo(
                     c.getString(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_NAME)),

@@ -15,7 +15,7 @@ public final class DatabaseContract {
         public static final String COLUMN_NAME_NAME = "name";
         public static final String COLUMN_NAME_DESCRIPTION = "description";
         public static final String COLUMN_NAME_PRIORITY = "priority";
-        public static final String COLUMN_NAME_DATE_TIME = "priority";
+        public static final String COLUMN_NAME_DATE_TIME = "date_time";
 
         public static final String TEXT_TYPE = " TEXT";
         public static final String COMMA_SEP = ",";
@@ -30,8 +30,8 @@ public final class DatabaseContract {
                         COLUMN_NAME_ID + " INTEGER PRIMARY KEY" + COMMA_SEP +   // _id
                         COLUMN_NAME_NAME + TEXT_TYPE + COMMA_SEP +              // name
                         COLUMN_NAME_DESCRIPTION + TEXT_TYPE + COMMA_SEP +       // description
-                        COLUMN_NAME_PRIORITY + " INTEGER" +                      // priority
-                        COLUMN_NAME_DATE_TIME + " TEXT" +                      // date time
+                        COLUMN_NAME_PRIORITY + " INTEGER" + COMMA_SEP +         // priority
+                        COLUMN_NAME_DATE_TIME + " TEXT" +                       // date time
                         " )";
 
         public static final String SQL_DELETE_TABLE_NOTES =
@@ -41,7 +41,7 @@ public final class DatabaseContract {
                 "INSERT INTO " + TABLE_NAME_NOTES + " (" +
                         COLUMN_NAME_NAME + COMMA_SEP +
                         COLUMN_NAME_DESCRIPTION + COMMA_SEP +
-                        COLUMN_NAME_PRIORITY +
+                        COLUMN_NAME_PRIORITY + COMMA_SEP +
                         COLUMN_NAME_DATE_TIME +
                         ") VALUES (" +
                         "\"" + FIRST_NOTE_NAME + "\"" + COMMA_SEP +
