@@ -40,6 +40,7 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
     EditText editor_et_priority;
     NestedScrollView note_editor_scroll;
 
+
     int mType;
     int mPosition;
     public final static int INTENT_TYPE_UPDATE = 1;
@@ -47,11 +48,11 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
     public int mMaxDescriptionSymbolCount = 500;
 
 
-    int mYear;
-    int mMonth;
-    int mDay;
-    int mHour;
-    int mMinute;
+    int mYear = 2017;
+    int mMonth = 5;
+    int mDay = 11;
+    int mHour = 14;
+    int mMinute = 35;
 
     boolean isNameTouched = false;
     boolean isDescriptionTouched = false;
@@ -87,6 +88,8 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
             case INTENT_TYPE_ADD:
                 mTitle.setText(R.string.toolbar_title_add);
                 btn_delete.setVisibility(View.INVISIBLE);
+                mPresenter.setDateTime(mYear, mMonth, mDay, mHour, mMinute);
+
                 break;
 
             case INTENT_TYPE_UPDATE:
@@ -157,7 +160,6 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
     @Override
     protected void onDestroy() {
         mPresenter.releasePresenter();
-
         mPresenter = null;
         super.onDestroy();
     }
@@ -167,7 +169,6 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
         editor_et_dateTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
 
                 final AlertDialog.Builder dateBilder = new AlertDialog.Builder(getActivity());
                 final DatePicker datePicker = new DatePicker(getActivity());

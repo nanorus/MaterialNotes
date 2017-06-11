@@ -35,8 +35,6 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
 
         holder.name.setText(name);
         holder.priority.setText(String.valueOf(priority));
-        System.out.println("====================== binding: " + position);
-        System.out.println(mNotes.get(position).getName());
         int color;
         switch (priority) {
             case 1:

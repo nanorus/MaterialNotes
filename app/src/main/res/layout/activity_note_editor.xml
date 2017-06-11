@@ -10,7 +10,7 @@
         android:id="@+id/note_editor_scroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="10dp"
+
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
@@ -19,6 +19,7 @@
             android:layout_height="match_parent"
             android:lineSpacingExtra="8dp"
             android:orientation="vertical"
+            android:padding="10dp"
             android:textSize="20sp">
 
             <TextView

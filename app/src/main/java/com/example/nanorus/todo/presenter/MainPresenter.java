@@ -29,7 +29,7 @@ public class MainPresenter implements MainView.Action {
         for (int i = 0; i < notePojos.size(); i++){
             noteRecyclerPojos.add(new NoteRecyclerPojo(
                     notePojos.get(i).getName(),
-                    null,
+                    notePojos.get(i).getDateTimePojo(),
                     notePojos.get(i).getPriority()
             ));
         }
@@ -42,7 +42,7 @@ public class MainPresenter implements MainView.Action {
     public void deleteNote(int position) {
         int id = DatabaseUse.getNoteDbIdByPosition(mActivity, position, mPreferences.loadSortType());
         DatabaseUse.deleteNote(id, mActivity);
-        EventBus.getBus().post(new UpdateNotesListEvent(DatabaseUse.SORT_BY_DATE_CREATING));
+        EventBus.getBus().post(new UpdateNotesListEvent(mPreferences.loadSortType()));
     }
 
 

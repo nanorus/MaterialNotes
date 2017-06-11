@@ -67,11 +67,12 @@ public class NoteEditorPresenter implements NoteEditorView.Action {
         mActivity.setPriority(String.valueOf(notePojo.getPriority()));
 
         // set date and time
-        setDateTime(notePojo.getDateTimePojo().getYear(), notePojo.getDateTimePojo().getMonth(),
-                notePojo.getDateTimePojo().getDay(), notePojo.getDateTimePojo().getHour(),
-                notePojo.getDateTimePojo().getMinute()
-        );
-
+        if (notePojo.getDateTimePojo() != null) {
+            setDateTime(notePojo.getDateTimePojo().getYear(), notePojo.getDateTimePojo().getMonth(),
+                    notePojo.getDateTimePojo().getDay(), notePojo.getDateTimePojo().getHour(),
+                    notePojo.getDateTimePojo().getMinute()
+            );
+        }
 
     }
 
@@ -139,12 +140,12 @@ public class NoteEditorPresenter implements NoteEditorView.Action {
         }
         String minuteString;
         if (minute < 10) {
-            minuteString = String.valueOf(minute) + "0";
+            minuteString = "0" + String.valueOf(minute);
         } else minuteString = String.valueOf(minute);
 
         String hourString;
         if (hour < 10) {
-            hourString = String.valueOf(hour) + "0";
+            hourString = "0" + String.valueOf(hour);
         } else hourString = String.valueOf(hour);
 
         String dateTime = String.valueOf(day) + " " + monthString + " " + String.valueOf(year) +

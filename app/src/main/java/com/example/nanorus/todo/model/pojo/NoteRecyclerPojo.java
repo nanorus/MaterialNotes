@@ -3,10 +3,10 @@ package com.example.nanorus.todo.model.pojo;
 public class NoteRecyclerPojo {
 
     private String name;
-    private String date;
+    private DateTimePojo date;
     private int priority;
 
-    public NoteRecyclerPojo(String name, String date, int priority) {
+    public NoteRecyclerPojo(String name, DateTimePojo date, int priority) {
         this.name = name;
         this.date = date;
         this.priority = priority;
@@ -24,11 +24,11 @@ public class NoteRecyclerPojo {
         this.name = name;
     }
 
-    public String getDate() {
+    public DateTimePojo getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(DateTimePojo date) {
         this.date = date;
     }
 

@@ -14,6 +14,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.example.nanorus.nanojunior.R;
 import com.example.nanorus.todo.bus.EventBus;
@@ -133,6 +134,7 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
     @Override
     public void updateNotesList(int sortBy) {
         // loader start load list fromm sql
+        Toast.makeText(this, "sortBy: " + sortBy, Toast.LENGTH_SHORT).show();
         List<NoteRecyclerPojo> list = mPresenter.getAllNotesRecyclerPojo(sortBy);
         NotesRecyclerViewAdapter adapter = new NotesRecyclerViewAdapter(list);
         mNotesList.setAdapter(adapter);
