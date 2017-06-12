@@ -1,8 +1,10 @@
 package com.example.nanorus.todo.view.MainActivity;
 
+import android.app.LoaderManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.Loader;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -14,15 +16,15 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.example.nanorus.nanojunior.R;
 import com.example.nanorus.todo.bus.EventBus;
 import com.example.nanorus.todo.bus.event.UpdateNotesListEvent;
-import com.example.nanorus.todo.model.database.DatabaseUse;
+import com.example.nanorus.todo.model.DatabaseManager;
 import com.example.nanorus.todo.model.pojo.NoteRecyclerPojo;
 import com.example.nanorus.todo.presenter.MainPresenter;
 import com.example.nanorus.todo.utils.PreferenceUse;
+import com.example.nanorus.todo.view.MainActivity.loaders.AllNotesLoader;
 import com.example.nanorus.todo.view.NoteEditorActivity.NoteEditorActivity;
 import com.example.nanorus.todo.view.ui.adapters.NotesRecyclerViewAdapter;
 import com.example.nanorus.todo.view.ui.recyclerView.ItemClickSupport;
@@ -40,7 +42,7 @@ import com.squareup.otto.Subscribe;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements MainView.View {
+public class MainActivity extends AppCompatActivity implements MainView.View, LoaderManager.LoaderCallbacks<List<NoteRecyclerPojo>> {
     MainPresenter mPresenter;
     Toolbar mToolbar;
     FloatingActionButton mFab;
@@ -49,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
     private PreferenceUse mPreferences;
 
     ImageButton main_btn_clear_all;
-
+    NotesRecyclerViewAdapter adapter;
 
 
     @Override
@@ -133,12 +135,18 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
 
     @Override
     public void updateNotesList(int sortBy) {
-        // loader start load list fromm sql
-        Toast.makeText(this, "sortBy: " + sortBy, Toast.LENGTH_SHORT).show();
-        List<NoteRecyclerPojo> list = mPresenter.getAllNotesRecyclerPojo(sortBy);
-        NotesRecyclerViewAdapter adapter = new NotesRecyclerViewAdapter(list);
-        mNotesList.setAdapter(adapter);
+        // loader start load list from sql
+
+        Bundle args = new Bundle();
+        args.putInt("sortBy", sortBy);
+
+        if (getLoaderManager().getLoader(0) == null)
+            getLoaderManager().initLoader(0, args, getActivity());
+        else
+            getLoaderManager().restartLoader(0, args, getActivity());
+
     }
+
 
     @Subscribe
     public void updateNotesListListener(UpdateNotesListEvent event) {
@@ -221,7 +229,7 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
 
 
         ArrayList<IDrawerItem> items = new ArrayList<>();
-        items.add(new PrimaryDrawerItem().withIdentifier(21).withName("Date of creating"));
+        items.add(new PrimaryDrawerItem().withIdentifier(21).withName("Created"));
         items.add(new PrimaryDrawerItem().withIdentifier(22).withName("Name"));
         items.add(new PrimaryDrawerItem().withIdentifier(23).withName("Priority"));
         items.add(new PrimaryDrawerItem().withIdentifier(24).withName("Date and time"));
@@ -247,20 +255,20 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
                                 goNoteEditorActivity(NoteEditorActivity.INTENT_TYPE_ADD, 0);
                                 break;
                             case 21:
-                                mPreferences.saveSortType(DatabaseUse.SORT_BY_DATE_CREATING);
-                                EventBus.getBus().post(new UpdateNotesListEvent(DatabaseUse.SORT_BY_DATE_CREATING));
+                                mPreferences.saveSortType(DatabaseManager.SORT_BY_DATE_CREATING);
+                                EventBus.getBus().post(new UpdateNotesListEvent(DatabaseManager.SORT_BY_DATE_CREATING));
                                 break;
                             case 22:
-                                mPreferences.saveSortType(DatabaseUse.SORT_BY_NAME);
-                                EventBus.getBus().post(new UpdateNotesListEvent(DatabaseUse.SORT_BY_NAME));
+                                mPreferences.saveSortType(DatabaseManager.SORT_BY_NAME);
+                                EventBus.getBus().post(new UpdateNotesListEvent(DatabaseManager.SORT_BY_NAME));
                                 break;
                             case 23:
-                                mPreferences.saveSortType(DatabaseUse.SORT_BY_PRIORITY);
-                                EventBus.getBus().post(new UpdateNotesListEvent(DatabaseUse.SORT_BY_PRIORITY));
+                                mPreferences.saveSortType(DatabaseManager.SORT_BY_PRIORITY);
+                                EventBus.getBus().post(new UpdateNotesListEvent(DatabaseManager.SORT_BY_PRIORITY));
                                 break;
                             case 24:
-                                mPreferences.saveSortType(DatabaseUse.SORT_BY_DATE_TIME);
-                                EventBus.getBus().post(new UpdateNotesListEvent(DatabaseUse.SORT_BY_DATE_TIME));
+                                mPreferences.saveSortType(DatabaseManager.SORT_BY_DATE_TIME);
+                                EventBus.getBus().post(new UpdateNotesListEvent(DatabaseManager.SORT_BY_DATE_TIME));
                                 break;
                         }
 
@@ -270,4 +278,22 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
                 .build();
     }
 
+    @Override
+    public Loader<List<NoteRecyclerPojo>> onCreateLoader(int id, Bundle args) {
+        Loader<List<NoteRecyclerPojo>> loader;
+        loader = new AllNotesLoader(getActivity(), mPresenter, args.getInt("sortBy"));
+        return loader;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<List<NoteRecyclerPojo>> loader, List<NoteRecyclerPojo> data) {
+        adapter = new NotesRecyclerViewAdapter(data);
+        mNotesList.setAdapter(adapter);
+    }
+
+
+    @Override
+    public void onLoaderReset(Loader<List<NoteRecyclerPojo>> loader) {
+
+    }
 }

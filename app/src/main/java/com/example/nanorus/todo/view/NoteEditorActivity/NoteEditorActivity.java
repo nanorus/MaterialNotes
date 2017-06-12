@@ -167,6 +167,11 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
     }
 
     @Override
+    public void onBackPressedView() {
+        onBackPressed();
+    }
+
+    @Override
     protected void onDestroy() {
         mPresenter.releasePresenter();
         mPresenter = null;

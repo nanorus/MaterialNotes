@@ -4,7 +4,7 @@ import android.widget.Toast;
 
 import com.example.nanorus.todo.bus.EventBus;
 import com.example.nanorus.todo.bus.event.UpdateNotesListEvent;
-import com.example.nanorus.todo.model.database.DatabaseUse;
+import com.example.nanorus.todo.model.DatabaseManager;
 import com.example.nanorus.todo.model.pojo.DateTimePojo;
 import com.example.nanorus.todo.model.pojo.NotePojo;
 import com.example.nanorus.todo.utils.PreferenceUse;
@@ -13,7 +13,7 @@ import com.example.nanorus.todo.view.NoteEditorActivity.NoteEditorView;
 
 
 public class NoteEditorPresenter implements NoteEditorView.Action {
-    private NoteEditorActivity mActivity;
+    private NoteEditorView.View mActivity;
     private PreferenceUse mPreferences;
 
     public NoteEditorPresenter(NoteEditorActivity activity) {
@@ -24,25 +24,31 @@ public class NoteEditorPresenter implements NoteEditorView.Action {
     @Override
     public void onFabClicked(int type, int position, String name, String description, String priority, DateTimePojo dateTimePojo) {
 
-
         try {
             NotePojo notePojo = new NotePojo(name, dateTimePojo, description, Integer.parseInt(priority));
             switch (type) {
                 case NoteEditorActivity.INTENT_TYPE_ADD:
-                    DatabaseUse.addNote(notePojo, mActivity.getActivity());
+                    DatabaseManager.addNote(notePojo, mActivity.getActivity());
+
+                    // add new notification
+
                     break;
 
                 case NoteEditorActivity.INTENT_TYPE_UPDATE:
-                    int id = DatabaseUse.getNoteDbIdByPosition(mActivity, position, mPreferences.loadSortType());
-                    DatabaseUse.updateNote(notePojo, mActivity.getActivity(), id);
+                    int id = DatabaseManager.getNoteDbIdByPosition(mActivity.getActivity(), position, mPreferences.loadSortType());
+                    DatabaseManager.updateNote(notePojo, mActivity.getActivity(), id);
+
+                    // delete old notification
+                    // add new notification
+
                     break;
             }
 
             EventBus.getBus().post(new UpdateNotesListEvent(mPreferences.loadSortType()));
-            mActivity.onBackPressed();
+            mActivity.onBackPressedView();
 
         } catch (java.lang.NumberFormatException e) {
-            Toast.makeText(mActivity, "Priority must be a NUMBER", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mActivity.getActivity(), "Priority must be a NUMBER", Toast.LENGTH_SHORT).show();
         }
 
 
@@ -50,17 +56,20 @@ public class NoteEditorPresenter implements NoteEditorView.Action {
 
     @Override
     public void deleteNote(int position) {
-        int id = DatabaseUse.getNoteDbIdByPosition(mActivity, position, mPreferences.loadSortType());
-        DatabaseUse.deleteNote(id, mActivity);
-        mActivity.onBackPressed();
+        int id = DatabaseManager.getNoteDbIdByPosition(mActivity.getActivity(), position, mPreferences.loadSortType());
+        DatabaseManager.deleteNote(id, mActivity.getActivity());
+        mActivity.onBackPressedView();
         EventBus.getBus().post(new UpdateNotesListEvent(mPreferences.loadSortType()));
+
+        // delete notification
+
     }
 
 
     @Override
     public void setFields(int position) {
-        int id = DatabaseUse.getNoteDbIdByPosition(mActivity, position, mPreferences.loadSortType());
-        NotePojo notePojo = DatabaseUse.getNote(mActivity.getActivity(), id);
+        int id = DatabaseManager.getNoteDbIdByPosition(mActivity.getActivity(), position, mPreferences.loadSortType());
+        NotePojo notePojo = DatabaseManager.getNote(mActivity.getActivity(), id);
 
         mActivity.setName(notePojo.getName());
         mActivity.setDescription(notePojo.getDescription());

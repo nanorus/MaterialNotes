@@ -27,5 +27,8 @@ public interface MainView {
         MainActivity getActivity();
 
         void updateNotesList(int sortBy);
+
+
+
     }
 }

@@ -3,7 +3,7 @@ package com.example.nanorus.todo.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.example.nanorus.todo.model.database.DatabaseUse;
+import com.example.nanorus.todo.model.DatabaseManager;
 
 public class PreferenceUse {
 
@@ -24,7 +24,7 @@ public class PreferenceUse {
     }
 
     public int loadSortType() {
-        return mPreferences.getInt("notesSortType", DatabaseUse.SORT_BY_DATE_CREATING);
+        return mPreferences.getInt("notesSortType", DatabaseManager.SORT_BY_DATE_CREATING);
     }
 
 }

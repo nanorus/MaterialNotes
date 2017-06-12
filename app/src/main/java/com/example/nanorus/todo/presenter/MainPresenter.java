@@ -1,19 +1,25 @@
 package com.example.nanorus.todo.presenter;
 
+import android.app.LoaderManager;
+import android.content.Loader;
+import android.os.Bundle;
+
 import com.example.nanorus.todo.bus.EventBus;
 import com.example.nanorus.todo.bus.event.UpdateNotesListEvent;
-import com.example.nanorus.todo.model.database.DatabaseUse;
+import com.example.nanorus.todo.model.DatabaseManager;
 import com.example.nanorus.todo.model.pojo.NotePojo;
 import com.example.nanorus.todo.model.pojo.NoteRecyclerPojo;
 import com.example.nanorus.todo.utils.PreferenceUse;
 import com.example.nanorus.todo.view.MainActivity.MainActivity;
 import com.example.nanorus.todo.view.MainActivity.MainView;
+import com.example.nanorus.todo.view.MainActivity.loaders.AllNotesLoader;
+import com.example.nanorus.todo.view.ui.adapters.NotesRecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainPresenter implements MainView.Action {
-    MainActivity mActivity;
+    MainView.View mActivity;
     private PreferenceUse mPreferences;
 
     public MainPresenter(MainActivity activity) {
@@ -23,8 +29,10 @@ public class MainPresenter implements MainView.Action {
 
     @Override
     public List<NoteRecyclerPojo> getAllNotesRecyclerPojo(int sortBy) {
+
+
         ArrayList<NoteRecyclerPojo> noteRecyclerPojos = new ArrayList<>();
-        List<NotePojo> notePojos = DatabaseUse.getAllNotes(mActivity, sortBy);
+        List<NotePojo> notePojos = DatabaseManager.getAllNotes(mActivity.getActivity(), sortBy);
 
         for (int i = 0; i < notePojos.size(); i++){
             noteRecyclerPojos.add(new NoteRecyclerPojo(
@@ -40,8 +48,8 @@ public class MainPresenter implements MainView.Action {
 
     @Override
     public void deleteNote(int position) {
-        int id = DatabaseUse.getNoteDbIdByPosition(mActivity, position, mPreferences.loadSortType());
-        DatabaseUse.deleteNote(id, mActivity);
+        int id = DatabaseManager.getNoteDbIdByPosition(mActivity.getActivity(), position, mPreferences.loadSortType());
+        DatabaseManager.deleteNote(id, mActivity.getActivity());
         EventBus.getBus().post(new UpdateNotesListEvent(mPreferences.loadSortType()));
     }
 
@@ -53,7 +61,10 @@ public class MainPresenter implements MainView.Action {
 
     @Override
     public void onTouchClearNotes() {
-        DatabaseUse.clearNotes(mActivity);
-        EventBus.getBus().post(new UpdateNotesListEvent(DatabaseUse.SORT_BY_DATE_CREATING));
+        DatabaseManager.clearNotes(mActivity.getActivity());
+        EventBus.getBus().post(new UpdateNotesListEvent(DatabaseManager.SORT_BY_DATE_CREATING));
     }
+
+
+
 }

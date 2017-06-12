@@ -1,4 +1,4 @@
-package com.example.nanorus.todo.model.database;
+package com.example.nanorus.todo.model;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.widget.Toast;
 
+import com.example.nanorus.todo.model.database.DatabaseContract;
+import com.example.nanorus.todo.model.database.DatabaseHelper;
 import com.example.nanorus.todo.model.pojo.DateTimePojo;
 import com.example.nanorus.todo.model.pojo.NotePojo;
 
@@ -16,7 +18,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public final class DatabaseUse {
+public final class DatabaseManager {
     public final static int SORT_BY_DATE_CREATING = 0;
     public final static int SORT_BY_NAME = 1;
     public final static int SORT_BY_PRIORITY = 2;
@@ -78,16 +80,16 @@ public final class DatabaseUse {
 
         Cursor c;
         switch (sortBy) {
-            case DatabaseUse.SORT_BY_DATE_CREATING:
+            case DatabaseManager.SORT_BY_DATE_CREATING:
                 orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_ID;
                 break;
-            case DatabaseUse.SORT_BY_NAME:
+            case DatabaseManager.SORT_BY_NAME:
                 orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_NAME;
                 break;
-            case DatabaseUse.SORT_BY_PRIORITY:
+            case DatabaseManager.SORT_BY_PRIORITY:
                 orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_PRIORITY;
                 break;
-            case DatabaseUse.SORT_BY_DATE_TIME:
+            case DatabaseManager.SORT_BY_DATE_TIME:
                 orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_DATE_TIME + " DESC";
                 break;
             default:
@@ -104,7 +106,6 @@ public final class DatabaseUse {
 
         if (c.moveToFirst()) {
             dateString = c.getString(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_DATE_TIME));
-            Toast.makeText(context, "date:" + dateString, Toast.LENGTH_SHORT).show();
             if (dateString != null) {
                 dateTimePojo = stringToDateTimePojo(dateString);
             }
@@ -117,7 +118,6 @@ public final class DatabaseUse {
 
             while (c.moveToNext()) {
                 dateString = c.getString(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_DATE_TIME));
-                Toast.makeText(context, "date:" + dateString, Toast.LENGTH_SHORT).show();
                 if (dateString != null) {
                     dateTimePojo = stringToDateTimePojo(dateString);
                 }
@@ -177,17 +177,17 @@ public final class DatabaseUse {
         String orderBy;
 
         switch (sortType) {
-            case DatabaseUse.SORT_BY_DATE_CREATING:
+            case DatabaseManager.SORT_BY_DATE_CREATING:
                 orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_ID;
                 break;
-            case DatabaseUse.SORT_BY_NAME:
+            case DatabaseManager.SORT_BY_NAME:
                 orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_NAME;
                 break;
-            case DatabaseUse.SORT_BY_PRIORITY:
+            case DatabaseManager.SORT_BY_PRIORITY:
                 orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_PRIORITY;
                 break;
-            case DatabaseUse.SORT_BY_DATE_TIME:
-                orderBy = "datetime(" + DatabaseContract.DatabaseEntry.COLUMN_NAME_DATE_TIME + ")";
+            case DatabaseManager.SORT_BY_DATE_TIME:
+                orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_DATE_TIME+ " DESC";
                 break;
             default:
                 orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_ID;

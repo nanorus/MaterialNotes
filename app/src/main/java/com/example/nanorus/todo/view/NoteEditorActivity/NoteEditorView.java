@@ -13,6 +13,13 @@ public interface NoteEditorView {
 
         void setFields(int position);
 
+        /*
+        void addNotification( parameters );
+        void updateNotification( parameters );
+        void deleteNotification( parameters );
+
+        */
+
         void setDescriptionSymbolsLengthText(int currentLength, int maxLength);
 
         void releasePresenter();
@@ -44,5 +51,6 @@ public interface NoteEditorView {
         void setDescriptionSymbolsLengthText(String text);
 
         NoteEditorActivity getActivity();
+        void onBackPressedView();
     }
 }
