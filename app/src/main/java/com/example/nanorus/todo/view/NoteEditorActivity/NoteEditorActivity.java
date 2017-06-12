@@ -133,6 +133,15 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
     }
 
     @Override
+    public void setDateTimeVariables(int year, int month, int day, int hour, int minute) {
+        mYear = year;
+        mMonth = month;
+        mDay = day;
+        mHour = hour;
+        mMinute = minute;
+    }
+
+    @Override
     public void showAlert(Context context, String title, String message, String buttonPositiveTitle, String buttonNegativeTitle, AlertDialog.OnClickListener positiveOnClickListener, AlertDialog.OnClickListener negativeOnClickListener) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
@@ -222,7 +231,6 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
                 dateBilder.show();
             }
         });
-
 
 
         // description

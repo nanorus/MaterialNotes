@@ -88,17 +88,14 @@ public final class DatabaseUse {
                 orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_PRIORITY;
                 break;
             case DatabaseUse.SORT_BY_DATE_TIME:
-                orderBy = "datetime(\"" + DatabaseContract.DatabaseEntry.COLUMN_NAME_DATE_TIME + "\") ASC";
+                orderBy =  DatabaseContract.DatabaseEntry.COLUMN_NAME_DATE_TIME + " DESC";
                 break;
             default:
                 orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_ID;
                 break;
         }
-        if (sortBy == DatabaseUse.SORT_BY_DATE_TIME) {
-            c = db.rawQuery("SELECT * FROM " + DatabaseContract.DatabaseEntry.TABLE_NAME_NOTES + " ORDER BY " + orderBy, null);
-        } else {
             c = db.query(DatabaseContract.DatabaseEntry.TABLE_NAME_NOTES, new String[]{"*"}, null, null, null, null, orderBy);
-        }
+
 
 
         ArrayList<NotePojo> notesList = new ArrayList<>();
@@ -138,6 +135,8 @@ public final class DatabaseUse {
 
 
         return notesList;
+
+
     }
 
     public static NotePojo getNote(Context context, int id) {
@@ -170,6 +169,7 @@ public final class DatabaseUse {
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
         db.execSQL(DatabaseContract.DatabaseEntry.SQL_DELETE_TABLE_NOTES);
         db.execSQL(DatabaseContract.DatabaseEntry.SQL_CREATE_TABLE_NOTES);
+        db.execSQL(DatabaseContract.DatabaseEntry.SQL_INSERT_FIRST_ENTRY_INTO_NOTES);
     }
 
     public static int getNoteDbIdByPosition(Context context, int position, int sortType) {
@@ -238,4 +238,7 @@ public final class DatabaseUse {
         }
         return dateTimePojo;
     }
+
+
+
 }

@@ -68,10 +68,13 @@ public class NoteEditorPresenter implements NoteEditorView.Action {
 
         // set date and time
         if (notePojo.getDateTimePojo() != null) {
+
             setDateTime(notePojo.getDateTimePojo().getYear(), notePojo.getDateTimePojo().getMonth(),
                     notePojo.getDateTimePojo().getDay(), notePojo.getDateTimePojo().getHour(),
                     notePojo.getDateTimePojo().getMinute()
             );
+
+
         }
 
     }
@@ -96,6 +99,8 @@ public class NoteEditorPresenter implements NoteEditorView.Action {
 
     @Override
     public void setDateTime(int year, int month, int day, int hour, int minute) {
+        mActivity.setDateTimeVariables(year, month, day, hour, minute);
+
         String monthString;
         switch (month) {
             case 0:

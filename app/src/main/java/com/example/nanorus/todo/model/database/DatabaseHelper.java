@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 4;
+    public static final int DATABASE_VERSION = 5;
     public static final String DATABASE_NAME = "todoDatabase.db";
 
     public DatabaseHelper(Context context) {
@@ -34,7 +34,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             db.execSQL(sql_add_column);
             db.execSQL(sql_insert_priority);
-        } else if (newVersion == 4) {
+        } else if (newVersion == 5) {
 
             db.execSQL("DROP TABLE " + DatabaseContract.DatabaseEntry.TABLE_NAME_NOTES);
 
@@ -42,7 +42,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
 
-        // wipe
+        // WIPE SAMPLE
         /*
             db.execSQL(DatabaseContract.DatabaseEntry.SQL_DELETE_TABLE_NOTES);
             onCreate(db);
