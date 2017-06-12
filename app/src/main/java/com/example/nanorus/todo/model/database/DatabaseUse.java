@@ -88,15 +88,13 @@ public final class DatabaseUse {
                 orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_PRIORITY;
                 break;
             case DatabaseUse.SORT_BY_DATE_TIME:
-                orderBy =  DatabaseContract.DatabaseEntry.COLUMN_NAME_DATE_TIME + " DESC";
+                orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_DATE_TIME + " DESC";
                 break;
             default:
                 orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_ID;
                 break;
         }
-            c = db.query(DatabaseContract.DatabaseEntry.TABLE_NAME_NOTES, new String[]{"*"}, null, null, null, null, orderBy);
-
-
+        c = db.query(DatabaseContract.DatabaseEntry.TABLE_NAME_NOTES, new String[]{"*"}, null, null, null, null, orderBy);
 
         ArrayList<NotePojo> notesList = new ArrayList<>();
 
@@ -238,7 +236,6 @@ public final class DatabaseUse {
         }
         return dateTimePojo;
     }
-
 
 
 }
