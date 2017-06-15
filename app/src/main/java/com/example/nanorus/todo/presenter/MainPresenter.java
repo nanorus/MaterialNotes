@@ -1,9 +1,5 @@
 package com.example.nanorus.todo.presenter;
 
-import android.app.LoaderManager;
-import android.content.Loader;
-import android.os.Bundle;
-
 import com.example.nanorus.todo.bus.EventBus;
 import com.example.nanorus.todo.bus.event.UpdateNotesListEvent;
 import com.example.nanorus.todo.model.DatabaseManager;
@@ -12,8 +8,6 @@ import com.example.nanorus.todo.model.pojo.NoteRecyclerPojo;
 import com.example.nanorus.todo.utils.PreferenceUse;
 import com.example.nanorus.todo.view.MainActivity.MainActivity;
 import com.example.nanorus.todo.view.MainActivity.MainView;
-import com.example.nanorus.todo.view.MainActivity.loaders.AllNotesLoader;
-import com.example.nanorus.todo.view.ui.adapters.NotesRecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;

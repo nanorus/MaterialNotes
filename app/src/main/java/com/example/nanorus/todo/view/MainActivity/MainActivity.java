@@ -1,6 +1,7 @@
 package com.example.nanorus.todo.view.MainActivity;
 
 import android.app.LoaderManager;
+import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -24,7 +25,6 @@ import com.example.nanorus.todo.model.DatabaseManager;
 import com.example.nanorus.todo.model.pojo.NoteRecyclerPojo;
 import com.example.nanorus.todo.presenter.MainPresenter;
 import com.example.nanorus.todo.utils.PreferenceUse;
-import com.example.nanorus.todo.view.MainActivity.loaders.AllNotesLoader;
 import com.example.nanorus.todo.view.NoteEditorActivity.NoteEditorActivity;
 import com.example.nanorus.todo.view.ui.adapters.NotesRecyclerViewAdapter;
 import com.example.nanorus.todo.view.ui.recyclerView.ItemClickSupport;
@@ -279,9 +279,19 @@ public class MainActivity extends AppCompatActivity implements MainView.View, Lo
     }
 
     @Override
-    public Loader<List<NoteRecyclerPojo>> onCreateLoader(int id, Bundle args) {
-        Loader<List<NoteRecyclerPojo>> loader;
-        loader = new AllNotesLoader(getActivity(), mPresenter, args.getInt("sortBy"));
+    public Loader<List<NoteRecyclerPojo>> onCreateLoader(int id, final Bundle args) {
+        Loader<List<NoteRecyclerPojo>> loader = new AsyncTaskLoader<List<NoteRecyclerPojo>>(getActivity()) {
+            @Override
+            public List<NoteRecyclerPojo> loadInBackground() {
+                List<NoteRecyclerPojo> list = mPresenter.getAllNotesRecyclerPojo(args.getInt("sortBy"));
+                return list;
+            }
+            @Override
+            protected void onStartLoading() {
+                super.onStartLoading();
+                forceLoad();
+            }
+        };
         return loader;
     }
 

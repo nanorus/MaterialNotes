@@ -20,6 +20,7 @@ public interface NoteEditorView {
 
         */
 
+
         void setDescriptionSymbolsLengthText(int currentLength, int maxLength);
 
         void releasePresenter();
@@ -52,5 +53,7 @@ public interface NoteEditorView {
 
         NoteEditorActivity getActivity();
         void onBackPressedView();
+
+        void showToastShot(String text);
     }
 }

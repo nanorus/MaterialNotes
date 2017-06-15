@@ -1,7 +1,5 @@
 package com.example.nanorus.todo.presenter;
 
-import android.widget.Toast;
-
 import com.example.nanorus.todo.bus.EventBus;
 import com.example.nanorus.todo.bus.event.UpdateNotesListEvent;
 import com.example.nanorus.todo.model.DatabaseManager;
@@ -28,6 +26,8 @@ public class NoteEditorPresenter implements NoteEditorView.Action {
             NotePojo notePojo = new NotePojo(name, dateTimePojo, description, Integer.parseInt(priority));
             switch (type) {
                 case NoteEditorActivity.INTENT_TYPE_ADD:
+
+
                     DatabaseManager.addNote(notePojo, mActivity.getActivity());
 
                     // add new notification
@@ -48,7 +48,7 @@ public class NoteEditorPresenter implements NoteEditorView.Action {
             mActivity.onBackPressedView();
 
         } catch (java.lang.NumberFormatException e) {
-            Toast.makeText(mActivity.getActivity(), "Priority must be a NUMBER", Toast.LENGTH_SHORT).show();
+            mActivity.showToastShot("Priority must be a NUMBER");
         }
 
 
@@ -68,6 +68,9 @@ public class NoteEditorPresenter implements NoteEditorView.Action {
 
     @Override
     public void setFields(int position) {
+
+
+
         int id = DatabaseManager.getNoteDbIdByPosition(mActivity.getActivity(), position, mPreferences.loadSortType());
         NotePojo notePojo = DatabaseManager.getNote(mActivity.getActivity(), id);
 

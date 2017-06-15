@@ -20,6 +20,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.example.nanorus.nanojunior.R;
 import com.example.nanorus.todo.model.pojo.DateTimePojo;
@@ -169,6 +170,11 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
     @Override
     public void onBackPressedView() {
         onBackPressed();
+    }
+
+    @Override
+    public void showToastShot(String text) {
+        Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
     }
 
     @Override
