@@ -13,10 +13,12 @@ import com.example.nanorus.todo.model.pojo.NotePojo;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
+
+import rx.Observable;
+import rx.Subscriber;
+
 
 public final class DatabaseManager {
     public final static int SORT_BY_DATE_CREATING = 0;
@@ -72,68 +74,87 @@ public final class DatabaseManager {
         Toast.makeText(context, "Note deleted", Toast.LENGTH_SHORT).show();
     }
 
-    public static List<NotePojo> getAllNotes(Context context, int sortBy) {
-        DatabaseHelper databaseHelper = new DatabaseHelper(context);
-        SQLiteDatabase db = databaseHelper.getReadableDatabase();
+    public static Observable<NotePojo> getAllNotesObservable(final Context context, final int sortBy, final int offset) {
 
-        String orderBy;
+        System.out.println("new Observable()");
+        Observable<NotePojo> observable =
+                Observable.create(
+                        new Observable.OnSubscribe<NotePojo>() {
+                            @Override
+                            public void call(Subscriber<? super NotePojo> subscriber) {
 
-        Cursor c;
-        switch (sortBy) {
-            case DatabaseManager.SORT_BY_DATE_CREATING:
-                orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_ID;
-                break;
-            case DatabaseManager.SORT_BY_NAME:
-                orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_NAME;
-                break;
-            case DatabaseManager.SORT_BY_PRIORITY:
-                orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_PRIORITY;
-                break;
-            case DatabaseManager.SORT_BY_DATE_TIME:
-                orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_DATE_TIME + " DESC";
-                break;
-            default:
-                orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_ID;
-                break;
-        }
-        c = db.query(DatabaseContract.DatabaseEntry.TABLE_NAME_NOTES, new String[]{"*"}, null, null, null, null, orderBy);
-
-        ArrayList<NotePojo> notesList = new ArrayList<>();
-
-        String dateString;
-        DateTimePojo dateTimePojo = null;
+                                DatabaseHelper databaseHelper = new DatabaseHelper(context);
+                                SQLiteDatabase db = databaseHelper.getReadableDatabase();
 
 
-        if (c.moveToFirst()) {
-            dateString = c.getString(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_DATE_TIME));
-            if (dateString != null) {
-                dateTimePojo = stringToDateTimePojo(dateString);
-            }
-            notesList.add(new NotePojo(
-                    c.getString(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_NAME)),
-                    dateTimePojo,
-                    c.getString(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_DESCRIPTION)),
-                    c.getInt(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_PRIORITY))
-            ));
+                                String orderBy;
+                                int current_offset = offset;
+                                Cursor c;
+                                // switching orderBy
+                                switch (sortBy) {
+                                    case DatabaseManager.SORT_BY_DATE_CREATING:
+                                        orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_ID;
+                                        break;
+                                    case DatabaseManager.SORT_BY_NAME:
+                                        orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_NAME;
+                                        break;
+                                    case DatabaseManager.SORT_BY_PRIORITY:
+                                        orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_PRIORITY;
+                                        break;
+                                    case DatabaseManager.SORT_BY_DATE_TIME:
+                                        orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_DATE_TIME + " DESC";
+                                        break;
+                                    default:
+                                        orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_ID;
+                                        break;
+                                }
+                                c = db.rawQuery("SELECT SUM(" + DatabaseContract.DatabaseEntry.COLUMN_NAME_ID + ") FROM " +
+                                        DatabaseContract.DatabaseEntry.TABLE_NAME_NOTES, null);
 
-            while (c.moveToNext()) {
-                dateString = c.getString(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_DATE_TIME));
-                if (dateString != null) {
-                    dateTimePojo = stringToDateTimePojo(dateString);
-                }
-                notesList.add(new NotePojo(
-                        c.getString(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_NAME)),
-                        dateTimePojo,
-                        c.getString(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_DESCRIPTION)),
-                        c.getInt(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_PRIORITY))
-                ));
-            }
+                                if (c.moveToFirst()) {
+                                    int count = c.getInt(0);
+                                    NotePojo currentNote;
 
-        }
+                                    for (int i = 0; i < count; i++) {
+                                        // query
+                                        c = db.query(DatabaseContract.DatabaseEntry.TABLE_NAME_NOTES, new String[]{"*"},
+                                                null, null, null, null, String.valueOf(orderBy) + " LIMIT 1 OFFSET " + String.valueOf(current_offset));
+                                        String dateString;
+                                        DateTimePojo dateTimePojo = null;
 
+                                        // creating noteList
+                                        if (c.moveToFirst()) {
+                                            dateString = c.getString(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_DATE_TIME));
+                                            if (dateString != null) {
+                                                dateTimePojo = stringToDateTimePojo(dateString);
+                                            }
+                                            currentNote = new NotePojo(
+                                                    c.getString(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_NAME)),
+                                                    dateTimePojo,
+                                                    c.getString(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_DESCRIPTION)),
+                                                    c.getInt(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_PRIORITY))
+                                            );
 
-        return notesList;
+                                            subscriber.onNext(currentNote);
+                                            current_offset++;
 
+                                            try {
+                                                System.out.println("SLEEEEEEEEEPPPPPPPPPPPPPPPPPP");
+                                                Thread.sleep(10);
+                                            } catch (InterruptedException e) {
+                                                e.printStackTrace();
+                                            }
+
+                                        }
+                                        c.close();
+                                    }
+                                    subscriber.onCompleted();
+                                    databaseHelper.close();
+                                }
+                            }
+                        });
+        // creating and returning Observable
+        return observable;
 
     }
 
@@ -187,7 +208,7 @@ public final class DatabaseManager {
                 orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_PRIORITY;
                 break;
             case DatabaseManager.SORT_BY_DATE_TIME:
-                orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_DATE_TIME+ " DESC";
+                orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_DATE_TIME + " DESC";
                 break;
             default:
                 orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_ID;

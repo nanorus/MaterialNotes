@@ -1,13 +1,11 @@
 package com.example.nanorus.todo.view.MainActivity;
 
-import android.app.LoaderManager;
-import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.Loader;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -23,9 +21,11 @@ import com.example.nanorus.todo.bus.EventBus;
 import com.example.nanorus.todo.bus.event.UpdateNotesListEvent;
 import com.example.nanorus.todo.model.DatabaseManager;
 import com.example.nanorus.todo.model.pojo.NoteRecyclerPojo;
-import com.example.nanorus.todo.presenter.MainPresenter;
+import com.example.nanorus.todo.presenter.MainActivity.MainActivityRotateSavePojo;
+import com.example.nanorus.todo.presenter.MainActivity.MainPresenter;
 import com.example.nanorus.todo.utils.PreferenceUse;
 import com.example.nanorus.todo.view.NoteEditorActivity.NoteEditorActivity;
+import com.example.nanorus.todo.view.ui.adapters.NoPredictiveAnimationsLinearLayoutManager;
 import com.example.nanorus.todo.view.ui.adapters.NotesRecyclerViewAdapter;
 import com.example.nanorus.todo.view.ui.recyclerView.ItemClickSupport;
 import com.mikepenz.materialdrawer.AccountHeader;
@@ -42,16 +42,22 @@ import com.squareup.otto.Subscribe;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements MainView.View, LoaderManager.LoaderCallbacks<List<NoteRecyclerPojo>> {
+public class MainActivity extends AppCompatActivity implements MainView.View {
     MainPresenter mPresenter;
     Toolbar mToolbar;
     FloatingActionButton mFab;
-    RecyclerView mNotesList;
+    RecyclerView mNotesRecyclerView;
     SwipeRefreshLayout mSwipeRefresh;
     private PreferenceUse mPreferences;
+    private final String ROTATE_FRAGMENT_TAG = "ROTATE_FRAGMENT";
+    List<NoteRecyclerPojo> mNotes;
+    LinearLayoutManager mLinearLayoutManager;
+    boolean mIsRotated = false;
 
     ImageButton main_btn_clear_all;
     NotesRecyclerViewAdapter adapter;
+
+    RotateFragment mRotateFragment;
 
 
     @Override
@@ -59,7 +65,6 @@ public class MainActivity extends AppCompatActivity implements MainView.View, Lo
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mPreferences = new PreferenceUse(getActivity());
-        mPresenter = new MainPresenter(getActivity());
 
         main_btn_clear_all = (ImageButton) findViewById(R.id.main_btn_clear_all);
         mToolbar = (Toolbar) findViewById(R.id.main_toolbar);
@@ -67,22 +72,22 @@ public class MainActivity extends AppCompatActivity implements MainView.View, Lo
         mSwipeRefresh = (SwipeRefreshLayout) findViewById(R.id.main_swipeRefresh);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mNotesList = (RecyclerView) findViewById(R.id.main_rv_notesList);
+        mNotesRecyclerView = (RecyclerView) findViewById(R.id.main_rv_notesList);
 
 
         LinearLayoutManager manager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        mNotesList.setLayoutManager(manager);
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mNotesList.getContext(),
+        mNotesRecyclerView.setLayoutManager(manager);
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mNotesRecyclerView.getContext(),
                 manager.getOrientation());
-        mNotesList.addItemDecoration(dividerItemDecoration);
+        mNotesRecyclerView.addItemDecoration(dividerItemDecoration);
 
-        ItemClickSupport.addTo(mNotesList).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+        ItemClickSupport.addTo(mNotesRecyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
                 goNoteEditorActivity(NoteEditorActivity.INTENT_TYPE_UPDATE, position);
             }
         });
-        ItemClickSupport.addTo(mNotesList).setOnItemLongClickListener(new ItemClickSupport.OnItemLongClickListener() {
+        ItemClickSupport.addTo(mNotesRecyclerView).setOnItemLongClickListener(new ItemClickSupport.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClicked(RecyclerView recyclerView, final int position, View v) {
                 showAlert(getActivity(), "Delete this note?", "Delete is an irreversible action.", "Delete", "Cancel",
@@ -103,15 +108,48 @@ public class MainActivity extends AppCompatActivity implements MainView.View, Lo
             }
         });
 
+        setListeners();
 
         EventBus.getBus().register(this);
-        EventBus.getBus().post(new UpdateNotesListEvent(mPreferences.loadSortType()));
 
-        setListeners();
+        FragmentManager fm = getSupportFragmentManager();
+        mRotateFragment = (RotateFragment) fm.findFragmentByTag(ROTATE_FRAGMENT_TAG);
+
+        if (mRotateFragment == null) {
+            // new screen
+            mIsRotated = false;
+
+            mRotateFragment = new RotateFragment();
+            fm.beginTransaction().add(mRotateFragment, ROTATE_FRAGMENT_TAG).commit();
+
+            mPresenter = new MainPresenter(getActivity());
+
+        } else {
+            // rotated screen
+            mIsRotated = true;
+            mPresenter = new MainPresenter(getActivity());
+        }
+
+
         setDrawer();
 
     }
 
+
+    @Override
+    public void setAdapter(List<NoteRecyclerPojo> data) {
+        mNotes = data;
+        mLinearLayoutManager = new NoPredictiveAnimationsLinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        adapter = new NotesRecyclerViewAdapter(mNotes);
+        mNotesRecyclerView.setLayoutManager(mLinearLayoutManager);
+        mNotesRecyclerView.setAdapter(adapter);
+    }
+
+    @Override
+    public void updateAdapter(List<NoteRecyclerPojo> data) {
+        mNotes = data;
+        adapter.notifyDataSetChanged();
+    }
 
     @Override
     public void showAlert(Context context, String title, String message, String buttonPositiveTitle, String buttonNegativeTitle, AlertDialog.OnClickListener positiveOnClickListener, AlertDialog.OnClickListener negativeOnClickListener) {
@@ -133,28 +171,39 @@ public class MainActivity extends AppCompatActivity implements MainView.View, Lo
         return this;
     }
 
-    @Override
-    public void updateNotesList(int sortBy) {
-        // loader start load list from sql
-
-        Bundle args = new Bundle();
-        args.putInt("sortBy", sortBy);
-
-        if (getLoaderManager().getLoader(0) == null)
-            getLoaderManager().initLoader(0, args, getActivity());
-        else
-            getLoaderManager().restartLoader(0, args, getActivity());
-
-    }
-
-
     @Subscribe
     public void updateNotesListListener(UpdateNotesListEvent event) {
         updateNotesList(event.getSortBy());
     }
 
     @Override
+    public void updateNotesList(int sortBy) {
+        mPresenter.setNotesList(sortBy);
+    }
+
+
+    @Override
+    public void saveRotateData(MainActivityRotateSavePojo data) {
+        mRotateFragment.setSavePojo(data);
+    }
+
+    @Override
+    public MainActivityRotateSavePojo loadRotateData() {
+        return mRotateFragment.getSavePojo();
+    }
+
+    @Override
+    public boolean isRotated() {
+        return mIsRotated;
+    }
+
+
+    @Override
     protected void onDestroy() {
+        // save
+        mPresenter.saveRotateData();
+
+        // release
         mPresenter.releasePresenter();
         EventBus.getBus().unregister(this);
         mPresenter = null;
@@ -278,32 +327,6 @@ public class MainActivity extends AppCompatActivity implements MainView.View, Lo
                 .build();
     }
 
-    @Override
-    public Loader<List<NoteRecyclerPojo>> onCreateLoader(int id, final Bundle args) {
-        Loader<List<NoteRecyclerPojo>> loader = new AsyncTaskLoader<List<NoteRecyclerPojo>>(getActivity()) {
-            @Override
-            public List<NoteRecyclerPojo> loadInBackground() {
-                List<NoteRecyclerPojo> list = mPresenter.getAllNotesRecyclerPojo(args.getInt("sortBy"));
-                return list;
-            }
-            @Override
-            protected void onStartLoading() {
-                super.onStartLoading();
-                forceLoad();
-            }
-        };
-        return loader;
-    }
 
-    @Override
-    public void onLoadFinished(Loader<List<NoteRecyclerPojo>> loader, List<NoteRecyclerPojo> data) {
-        adapter = new NotesRecyclerViewAdapter(data);
-        mNotesList.setAdapter(adapter);
-    }
-
-
-    @Override
-    public void onLoaderReset(Loader<List<NoteRecyclerPojo>> loader) {
-
-    }
 }
+

@@ -25,7 +25,7 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
     public NotesRecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_note, parent, false);
 
-        return  new NotesRecyclerViewHolder(view);
+        return new NotesRecyclerViewHolder(view);
     }
 
     @Override
@@ -60,7 +60,10 @@ public class NotesRecyclerViewAdapter extends RecyclerView.Adapter<NotesRecycler
 
     @Override
     public int getItemCount() {
-        return mNotes.size();
+        if (mNotes != null)
+            return mNotes.size();
+        else
+            return 0;
     }
 
     class NotesRecyclerViewHolder extends RecyclerView.ViewHolder {

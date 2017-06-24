@@ -74,9 +74,10 @@
 
 
             <RelativeLayout
+
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="?attr/actionBarSize"
+                android:layout_marginTop="80dp"
                 android:padding="10dp">
 
                 <TextView
@@ -110,7 +111,6 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
-                    android:layout_marginTop="15dp"
                     android:text="@string/noteEditor_text_task"
                     app:layout_collapseMode="parallax"/>
 
@@ -125,6 +125,7 @@
                     android:layout_below="@+id/textView5"
                     android:layout_marginLeft="-3.5dp"
                     android:ems="10"
+                    android:focusable="false"
                     android:inputType="textPersonName"
                     android:text="@string/noteEditor_text_start_priority"/>
 
@@ -216,6 +217,7 @@
                             android:text="@string/noteEditor_text_title"
                             android:textColor="@android:color/black"
                             android:textSize="18sp"/>
+
                     </RelativeLayout>
 
 

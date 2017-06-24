@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="70dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
     >
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/list_item_note_iv_drawText"
-        android:layout_toEndOf="@+id/list_item_note_iv_drawText">
+        android:layout_toEndOf="@+id/list_item_note_iv_drawText"
+        android:layout_toRightOf="@+id/list_item_note_iv_drawText">
 
         <TextView
             android:id="@+id/textView"
@@ -27,12 +25,12 @@
             android:id="@+id/list_item_note_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
             android:layout_marginTop="13dp"
             android:text="@string/noteList_item_text_first_user_s_note"
-            android:textSize="18sp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"/>
+            android:textSize="18sp"/>
 
         <TextView
             android:id="@+id/list_item_note_tv_priority"
@@ -41,13 +39,14 @@
             android:layout_below="@+id/list_item_note_name"
             android:layout_toEndOf="@+id/textView"
             android:layout_toRightOf="@+id/textView"
-            android:text=""/>
+            android:text=""
+            android:textSize="13sp"/>
     </RelativeLayout>
 
     <ImageView
         android:id="@+id/list_item_note_iv_drawText"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"

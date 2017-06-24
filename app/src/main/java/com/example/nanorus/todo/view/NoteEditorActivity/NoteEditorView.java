@@ -7,7 +7,7 @@ import com.example.nanorus.todo.model.pojo.DateTimePojo;
 
 public interface NoteEditorView {
     interface Action {
-        void onFabClicked(int type, int position, String name, String description, String priority,  DateTimePojo dateTimePojo);
+        void onFabClicked(int type, int position, String name, String description, String priority, DateTimePojo dateTimePojo);
 
         void deleteNote(int position);
 
@@ -25,8 +25,7 @@ public interface NoteEditorView {
 
         void releasePresenter();
 
-        void setDateTime (int year, int month, int day, int hour, int minute);
-
+        void setDateTime(int year, int month, int day, int hour, int minute);
 
 
     }
@@ -35,7 +34,8 @@ public interface NoteEditorView {
 
         DateTimePojo getDateTimePojo();
 
-        void setDateTime (String dateTime);
+        void setDateTime(String dateTime);
+
 
         void setName(String name);
 
@@ -52,6 +52,7 @@ public interface NoteEditorView {
         void setDescriptionSymbolsLengthText(String text);
 
         NoteEditorActivity getActivity();
+
         void onBackPressedView();
 
         void showToastShot(String text);

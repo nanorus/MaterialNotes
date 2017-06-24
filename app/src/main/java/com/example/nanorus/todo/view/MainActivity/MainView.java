@@ -4,12 +4,14 @@ import android.content.Context;
 import android.support.v7.app.AlertDialog;
 
 import com.example.nanorus.todo.model.pojo.NoteRecyclerPojo;
+import com.example.nanorus.todo.presenter.MainActivity.MainActivityRotateSavePojo;
 
 import java.util.List;
 
 public interface MainView {
     interface Action {
-        List<NoteRecyclerPojo> getAllNotesRecyclerPojo(int sortBy);
+        void setNotesList(int sortBy);
+        void continueSettingNotesList();
 
         void deleteNote(int position);
 
@@ -17,9 +19,16 @@ public interface MainView {
 
         void onTouchClearNotes();
 
+        void saveRotateData();
+
     }
 
     interface View {
+
+        void setAdapter(List<NoteRecyclerPojo> data);
+
+        void updateAdapter(List<NoteRecyclerPojo> data);
+
         void showAlert(Context context, String title, String message,
                        String buttonPositiveTitle, String buttonNegativeTitle,
                        AlertDialog.OnClickListener positiveOnClickListener, AlertDialog.OnClickListener negativeOnClickListener);
@@ -28,7 +37,10 @@ public interface MainView {
 
         void updateNotesList(int sortBy);
 
+        void saveRotateData(MainActivityRotateSavePojo data);
 
+        MainActivityRotateSavePojo loadRotateData();
 
+        boolean isRotated();
     }
 }

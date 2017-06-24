@@ -3,6 +3,8 @@ package com.example.nanorus.todo.view.NoteEditorActivity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
@@ -18,6 +20,7 @@ import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -40,7 +43,6 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
     EditText editor_et_description;
     EditText editor_et_priority;
     NestedScrollView note_editor_scroll;
-
 
     int mType;
     int mPosition;
@@ -101,7 +103,6 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
                 break;
         }
 
-
         int currentSymbolCount = editor_et_description.getText().length();
         mPresenter.setDescriptionSymbolsLengthText(currentSymbolCount, mMaxDescriptionSymbolCount);
 
@@ -117,6 +118,10 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
     public void setDateTime(String dateTime) {
         editor_et_dateTime.setText(dateTime);
     }
+
+
+
+
 
     @Override
     public void setName(String name) {
@@ -185,6 +190,41 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
     }
 
     void setListeners() {
+
+
+        // priority
+        editor_et_priority.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                final NumberPicker numberPicker = new NumberPicker(getActivity());
+                numberPicker.setMinValue(1);
+                numberPicker.setMaxValue(15);
+                numberPicker.setValue(Integer.parseInt(editor_et_priority.getText().toString()));
+                setPickerDividerColor(numberPicker, getResources().getColor(R.color.accent));
+
+                builder.setTitle("Pick the number of priority");
+                builder.setPositiveButton("Pick", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        editor_et_priority.setText(String.valueOf(numberPicker.getValue()));
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                   dialog.dismiss();
+                    }
+                });
+
+
+                builder.setView(numberPicker);
+
+                builder.show();
+            }
+        });
+
+
         // day and time
         editor_et_dateTime.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -284,7 +324,9 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
                                 editor_et_description.getText().toString(),
                                 editor_et_priority.getText().toString(),
                                 getDateTimePojo());
+
                     }
+
                 });
 
                 editor_et_noteName.setOnTouchListener(new View.OnTouchListener() {
@@ -355,5 +397,28 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
                 break;
         }
     }
+
+    private void setPickerDividerColor(NumberPicker picker, int color) {
+
+        java.lang.reflect.Field[] pickerFields = NumberPicker.class.getDeclaredFields();
+        for (java.lang.reflect.Field pf : pickerFields) {
+            if (pf.getName().equals("mSelectionDivider")) {
+                pf.setAccessible(true);
+                try {
+                    ColorDrawable colorDrawable = new ColorDrawable(color);
+                    pf.set(picker, colorDrawable);
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
+                } catch (Resources.NotFoundException e) {
+                    e.printStackTrace();
+                }
+                catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
+        }
+    }
+
 
 }

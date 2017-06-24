@@ -1,5 +1,7 @@
 package com.example.nanorus.todo.presenter;
 
+import android.graphics.Color;
+
 import com.example.nanorus.todo.bus.EventBus;
 import com.example.nanorus.todo.bus.event.UpdateNotesListEvent;
 import com.example.nanorus.todo.model.DatabaseManager;
@@ -22,33 +24,38 @@ public class NoteEditorPresenter implements NoteEditorView.Action {
     @Override
     public void onFabClicked(int type, int position, String name, String description, String priority, DateTimePojo dateTimePojo) {
 
-        try {
-            NotePojo notePojo = new NotePojo(name, dateTimePojo, description, Integer.parseInt(priority));
-            switch (type) {
-                case NoteEditorActivity.INTENT_TYPE_ADD:
+
+        if (!name.isEmpty()) {
+            try {
+                NotePojo notePojo = new NotePojo(name, dateTimePojo, description, Integer.parseInt(priority));
+                switch (type) {
+                    case NoteEditorActivity.INTENT_TYPE_ADD:
 
 
-                    DatabaseManager.addNote(notePojo, mActivity.getActivity());
+                        DatabaseManager.addNote(notePojo, mActivity.getActivity());
 
-                    // add new notification
+                        // add new notification
 
-                    break;
+                        break;
 
-                case NoteEditorActivity.INTENT_TYPE_UPDATE:
-                    int id = DatabaseManager.getNoteDbIdByPosition(mActivity.getActivity(), position, mPreferences.loadSortType());
-                    DatabaseManager.updateNote(notePojo, mActivity.getActivity(), id);
+                    case NoteEditorActivity.INTENT_TYPE_UPDATE:
+                        int id = DatabaseManager.getNoteDbIdByPosition(mActivity.getActivity(), position, mPreferences.loadSortType());
+                        DatabaseManager.updateNote(notePojo, mActivity.getActivity(), id);
 
-                    // delete old notification
-                    // add new notification
+                        // delete old notification
+                        // add new notification
 
-                    break;
+                        break;
+                }
+
+                EventBus.getBus().post(new UpdateNotesListEvent(mPreferences.loadSortType()));
+                mActivity.onBackPressedView();
+
+            } catch (java.lang.NumberFormatException e) {
+                mActivity.showToastShot("Enter priority, NUMBER");
             }
-
-            EventBus.getBus().post(new UpdateNotesListEvent(mPreferences.loadSortType()));
-            mActivity.onBackPressedView();
-
-        } catch (java.lang.NumberFormatException e) {
-            mActivity.showToastShot("Priority must be a NUMBER");
+        } else {
+            mActivity.showToastShot("Enter Name");
         }
 
 
@@ -77,6 +84,23 @@ public class NoteEditorPresenter implements NoteEditorView.Action {
         mActivity.setName(notePojo.getName());
         mActivity.setDescription(notePojo.getDescription());
         mActivity.setPriority(String.valueOf(notePojo.getPriority()));
+
+        int color;
+        switch (notePojo.getPriority()) {
+            case 1:
+                color = Color.parseColor("#E91E63");
+                break;
+            case 2:
+                color = Color.parseColor("#9C27B0");
+                break;
+            case 3:
+                color = Color.parseColor("#2196F3");
+                break;
+            default:
+                color = Color.parseColor("#2196F3");
+                break;
+        }
+
 
         // set date and time
         if (notePojo.getDateTimePojo() != null) {
