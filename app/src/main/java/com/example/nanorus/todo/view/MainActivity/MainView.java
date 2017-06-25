@@ -11,6 +11,7 @@ import java.util.List;
 public interface MainView {
     interface Action {
         void setNotesList(int sortBy);
+
         void continueSettingNotesList();
 
         void deleteNote(int position);
@@ -24,6 +25,7 @@ public interface MainView {
     }
 
     interface View {
+
 
         void setAdapter(List<NoteRecyclerPojo> data);
 
@@ -40,6 +42,10 @@ public interface MainView {
         void saveRotateData(MainActivityRotateSavePojo data);
 
         MainActivityRotateSavePojo loadRotateData();
+
+        boolean isSwipeRefreshing();
+
+        void setSwipeRefreshing(boolean isRefreshing);
 
         boolean isRotated();
     }

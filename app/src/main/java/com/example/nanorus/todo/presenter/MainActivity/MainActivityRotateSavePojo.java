@@ -2,23 +2,23 @@ package com.example.nanorus.todo.presenter.MainActivity;
 
 import com.example.nanorus.todo.model.pojo.NoteRecyclerPojo;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivityRotateSavePojo {
 
-    ArrayList<NoteRecyclerPojo> noteRecyclerPojos;
+    List<NoteRecyclerPojo> noteRecyclerPojos;
 
 
-    public MainActivityRotateSavePojo(ArrayList<NoteRecyclerPojo> noteRecyclerPojos) {
+    public MainActivityRotateSavePojo(List<NoteRecyclerPojo> noteRecyclerPojos) {
         this.noteRecyclerPojos = noteRecyclerPojos;
     }
 
 
-    public ArrayList<NoteRecyclerPojo> getNoteRecyclerPojos() {
+    public List<NoteRecyclerPojo> getNoteRecyclerPojos() {
         return noteRecyclerPojos;
     }
 
-    public void setNoteRecyclerPojos(ArrayList<NoteRecyclerPojo> noteRecyclerPojos) {
+    public void setNoteRecyclerPojos(List<NoteRecyclerPojo> noteRecyclerPojos) {
         this.noteRecyclerPojos = noteRecyclerPojos;
     }
 }

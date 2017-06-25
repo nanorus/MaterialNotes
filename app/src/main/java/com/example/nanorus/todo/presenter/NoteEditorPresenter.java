@@ -190,7 +190,7 @@ public class NoteEditorPresenter implements NoteEditorView.Action {
         } else hourString = String.valueOf(hour);
 
         String dateTime = String.valueOf(day) + " " + monthString + " " + String.valueOf(year) +
-                "   " + hourString + ":" + minuteString;
+                ", " + hourString + ":" + minuteString;
         mActivity.setDateTime(dateTime);
     }
 }

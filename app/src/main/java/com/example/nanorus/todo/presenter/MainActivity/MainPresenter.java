@@ -10,6 +10,7 @@ import com.example.nanorus.todo.view.MainActivity.MainActivity;
 import com.example.nanorus.todo.view.MainActivity.MainView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import rx.Observable;
 import rx.Observer;
@@ -22,8 +23,8 @@ public class MainPresenter implements MainView.Action {
     MainView.View mActivity;
     private PreferenceUse mPreferences;
     Subscription noteRecyclerPojosSubscriber;
-    Observable<NoteRecyclerPojo> noteRecyclerPojosObservable;
-    ArrayList<NoteRecyclerPojo> noteRecyclerPojos;
+    Observable<List<NoteRecyclerPojo>> mNoteRecyclerPojosObservable;
+    List<NoteRecyclerPojo> mNoteRecyclerPojos;
 
     public MainPresenter(MainActivity activity) {
         mActivity = activity;
@@ -32,61 +33,68 @@ public class MainPresenter implements MainView.Action {
         if (mActivity.isRotated()) {
             continueSettingNotesList();
         } else {
-            noteRecyclerPojos = new ArrayList<>();
-            mActivity.setAdapter(noteRecyclerPojos);
+            mNoteRecyclerPojos = new ArrayList<>();
+            mActivity.setAdapter(mNoteRecyclerPojos);
             setNotesList(mPreferences.loadSortType());
         }
     }
 
     @Override
     public void setNotesList(int sortBy) {
+        mActivity.setSwipeRefreshing(true);
 
-        if (noteRecyclerPojos!=null)
-        noteRecyclerPojos.clear();
+        if (mNoteRecyclerPojos != null)
+            mNoteRecyclerPojos.clear();
+        mActivity.updateAdapter(mNoteRecyclerPojos);
 
         if (noteRecyclerPojosSubscriber != null) {
             noteRecyclerPojosSubscriber.unsubscribe();
         }
 
         // getting observable
-        Observable<NotePojo> notePojosObservable = DatabaseManager.getAllNotesObservable(mActivity.getActivity(), sortBy, 0);
-        noteRecyclerPojosObservable = notePojosObservable.map(new Func1<NotePojo, NoteRecyclerPojo>() {
-
+        Observable<List<NotePojo>> notePojosObservable = DatabaseManager.getAllNotesObservable(mActivity.getActivity(), sortBy, 0);
+        mNoteRecyclerPojosObservable = notePojosObservable.map(new Func1<List<NotePojo>, List<NoteRecyclerPojo>>() {
             @Override
-            public NoteRecyclerPojo call(NotePojo notePojo) {
-                return new NoteRecyclerPojo(
-                        notePojo.getName(),
-                        notePojo.getDateTimePojo(),
-                        notePojo.getPriority());
+            public List<NoteRecyclerPojo> call(List<NotePojo> notePojos) {
+                ArrayList<NoteRecyclerPojo> noteRecyclerPojos = new ArrayList<>();
+
+                for (int i = 0; i < notePojos.size(); i++) {
+                    NotePojo notePojo = notePojos.get(i);
+                    noteRecyclerPojos.add(new NoteRecyclerPojo(
+                            notePojo.getName(),
+                            notePojo.getDateTimePojo(),
+                            notePojo.getPriority()
+                    ));
+                }
+                return noteRecyclerPojos;
             }
-            // subscribing
         });
-        noteRecyclerPojosSubscriber = noteRecyclerPojosObservable
-                // MultiThreading
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<NoteRecyclerPojo>() {
-                               @Override
-                               public void onCompleted() {
-                                   noteRecyclerPojosSubscriber.unsubscribe();
-                               }
 
-                               @Override
-                               public void onError(Throwable e) {
+        // subscribing
+        noteRecyclerPojosSubscriber =
+                mNoteRecyclerPojosObservable
+                        // MultiThreading
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Observer<List<NoteRecyclerPojo>>() {
+                                       @Override
+                                       public void onCompleted() {
+                                           noteRecyclerPojosSubscriber.unsubscribe();
+                                       }
 
-                               }
+                                       @Override
+                                       public void onError(Throwable e) {
 
-                               @Override
-                               public void onNext(NoteRecyclerPojo noteRecyclerPojo) {
-                                   noteRecyclerPojos.add(noteRecyclerPojo);
-                                   mActivity.updateAdapter(noteRecyclerPojos);
+                                       }
 
-                               }
-                           }
-
-
-                );
-
+                                       @Override
+                                       public void onNext(List<NoteRecyclerPojo> noteRecyclerPojos) {
+                                           mNoteRecyclerPojos.addAll(noteRecyclerPojos);
+                                           mActivity.updateAdapter(mNoteRecyclerPojos);
+                                       }
+                                   }
+                        );
+        mActivity.setSwipeRefreshing(false);
 
     }
 
@@ -94,49 +102,51 @@ public class MainPresenter implements MainView.Action {
     public void continueSettingNotesList() {
         MainActivityRotateSavePojo savePojo = mActivity.loadRotateData();
 
-        noteRecyclerPojos = savePojo.getNoteRecyclerPojos();
-        mActivity.setAdapter(noteRecyclerPojos);
+        mNoteRecyclerPojos = savePojo.getNoteRecyclerPojos();
+        mActivity.setAdapter(mNoteRecyclerPojos);
 
         // getting observable
-        Observable<NotePojo> notePojosObservable = DatabaseManager.getAllNotesObservable(mActivity.getActivity(),
-                mPreferences.loadSortType(), noteRecyclerPojos.size());
-        noteRecyclerPojosObservable = notePojosObservable.map(new Func1<NotePojo, NoteRecyclerPojo>() {
-
+        Observable<List<NotePojo>> notePojosObservable = DatabaseManager.getAllNotesObservable(mActivity.getActivity(),
+                mPreferences.loadSortType(), mNoteRecyclerPojos.size());
+        mNoteRecyclerPojosObservable = notePojosObservable.map(new Func1<List<NotePojo>, List<NoteRecyclerPojo>>() {
             @Override
-            public NoteRecyclerPojo call(NotePojo notePojo) {
-                return new NoteRecyclerPojo(
-                        notePojo.getName(),
-                        notePojo.getDateTimePojo(),
-                        notePojo.getPriority());
+            public List<NoteRecyclerPojo> call(List<NotePojo> notePojos) {
+                ArrayList<NoteRecyclerPojo> noteRecyclerPojos = new ArrayList<>();
+                for (int i = 0; i < notePojos.size(); i++) {
+                    NotePojo notePojo = notePojos.get(i);
+                    noteRecyclerPojos.add(new NoteRecyclerPojo(
+                            notePojo.getName(),
+                            notePojo.getDateTimePojo(),
+                            notePojo.getPriority()
+                    ));
+                }
+                return noteRecyclerPojos;
             }
-            // subscribing
         });
+        // subscribing
+        noteRecyclerPojosSubscriber =
+                mNoteRecyclerPojosObservable
+                        // MultiThreading
+                        .subscribeOn(Schedulers.newThread())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Observer<List<NoteRecyclerPojo>>() {
+                                       @Override
+                                       public void onCompleted() {
+                                           noteRecyclerPojosSubscriber.unsubscribe();
+                                       }
 
-        // noteRecyclerPojosObservable = savePojo.getNoteRecyclerPojosObservable();
-        noteRecyclerPojosSubscriber = noteRecyclerPojosObservable
-                // MultiThreading
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<NoteRecyclerPojo>() {
-                               @Override
-                               public void onCompleted() {
-                                   noteRecyclerPojosSubscriber.unsubscribe();
-                               }
+                                       @Override
+                                       public void onError(Throwable e) {
 
-                               @Override
-                               public void onError(Throwable e) {
+                                       }
 
-                               }
-
-                               @Override
-                               public void onNext(NoteRecyclerPojo noteRecyclerPojo) {
-                                   noteRecyclerPojos.add(noteRecyclerPojo);
-                                   mActivity.updateAdapter(noteRecyclerPojos);
-                               }
-                           }
-
-
-                );
+                                       @Override
+                                       public void onNext(List<NoteRecyclerPojo> noteRecyclerPojos) {
+                                           mNoteRecyclerPojos.addAll(noteRecyclerPojos);
+                                           mActivity.updateAdapter(mNoteRecyclerPojos);
+                                       }
+                                   }
+                        );
     }
 
 
@@ -152,7 +162,10 @@ public class MainPresenter implements MainView.Action {
     public void releasePresenter() {
         if (!noteRecyclerPojosSubscriber.isUnsubscribed())
             noteRecyclerPojosSubscriber.unsubscribe();
-        noteRecyclerPojosObservable = null;
+        noteRecyclerPojosSubscriber = null;
+        mNoteRecyclerPojosObservable = null;
+        mPreferences = null;
+        mNoteRecyclerPojos = null;
         mActivity = null;
     }
 
@@ -164,7 +177,7 @@ public class MainPresenter implements MainView.Action {
 
     @Override
     public void saveRotateData() {
-        mActivity.saveRotateData(new MainActivityRotateSavePojo(noteRecyclerPojos));
+        mActivity.saveRotateData(new MainActivityRotateSavePojo(mNoteRecyclerPojos));
     }
 
 

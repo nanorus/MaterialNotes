@@ -136,6 +136,7 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
     }
 
 
+
     @Override
     public void setAdapter(List<NoteRecyclerPojo> data) {
         mNotes = data;
@@ -193,6 +194,11 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
     }
 
     @Override
+    public boolean isSwipeRefreshing() {
+        return mSwipeRefresh.isRefreshing();
+    }
+
+    @Override
     public boolean isRotated() {
         return mIsRotated;
     }
@@ -216,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
         main_btn_clear_all.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showAlert(getActivity(), "Clear ALL notes?", "This will remove all notes and cannot be undone.", "Delete", "Cancel",
+                showAlert(getActivity(), "Clear ALL notes?", "This will remove every note and can't be undone.", "Delete", "Cancel",
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -237,7 +243,6 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
             @Override
             public void onRefresh() {
                 EventBus.getBus().post(new UpdateNotesListEvent(mPreferences.loadSortType()));
-                mSwipeRefresh.setRefreshing(false);
             }
         });
 
@@ -247,6 +252,11 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
                 goNoteEditorActivity(NoteEditorActivity.INTENT_TYPE_ADD, 0);
             }
         });
+    }
+
+    @Override
+    public void setSwipeRefreshing(boolean isRefreshing) {
+        mSwipeRefresh.setRefreshing(isRefreshing);
     }
 
     private void goNoteEditorActivity(int type, int position) {
