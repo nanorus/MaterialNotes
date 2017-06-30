@@ -19,7 +19,8 @@
             android:layout_height="match_parent"
             android:lineSpacingExtra="8dp"
             android:orientation="vertical"
-            android:padding="10dp"
+
+            android:padding="8dp"
             android:textSize="20sp">
 
             <TextView
@@ -37,7 +38,7 @@
                 android:gravity="top"
                 android:inputType="textMultiLine"
                 android:maxLength="500"
-                android:minLines="7"
+                android:minLines="5"
                 android:text="@string/noteEditor_text_start_description"
                 android:textSize="14sp"/>
 
@@ -63,7 +64,6 @@
             android:layout_height="wrap_content"
             android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"
-            app:elevation="3dp"
             app:expandedTitleGravity="top"
             app:expandedTitleMarginStart="76dp"
             app:expandedTitleMarginTop="17dp"
@@ -72,13 +72,16 @@
             app:title="Note Editor"
             >
 
-
             <RelativeLayout
-
+                android:id="@+id/editor_rl_appbarFields"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="80dp"
-                android:padding="10dp">
+                android:layout_height="224dp"
+                android:layout_marginTop="64dp"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+
+                android:paddingTop="8dp">
+
 
                 <TextView
                     android:id="@+id/textView2"
@@ -156,16 +159,31 @@
                     android:layout_marginLeft="-3.5dp"
                     android:ems="10"
                     android:focusable="false"
+                    android:paddingBottom="8dp"
                     android:text="@string/noteEditor_text_btn_date_and_time"/>
 
 
             </RelativeLayout>
 
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="288dp"
+                android:background="@android:color/white">
+
+                <View
+                    android:id="@+id/view"
+                    android:layout_width="match_parent"
+                    android:layout_height="4dp"
+                    android:background="@drawable/toolbar_shadow"/>
+            </FrameLayout>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/note_editor_toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
+                android:layout_height="56dp"
+
+                app:elevation="4dp"
                 app:layout_collapseMode="pin"
                 app:layout_collapseParallaxMultiplier="1.0">
 
@@ -182,22 +200,24 @@
 
                         <ImageButton
                             android:id="@+id/editor_btn_save"
-                            android:layout_width="50dp"
-                            android:layout_height="match_parent"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
                             android:layout_alignParentBottom="true"
                             android:layout_alignParentEnd="true"
                             android:layout_alignParentRight="true"
                             android:layout_alignParentTop="true"
+                            android:layout_margin="12dp"
                             android:background="@android:color/transparent"
                             android:src="@drawable/ic_check_black_24dp"
                             />
 
                         <ImageButton
                             android:id="@+id/editor_btn_delete"
-                            android:layout_width="50dp"
-                            android:layout_height="match_parent"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
                             android:layout_alignParentBottom="true"
                             android:layout_alignParentTop="true"
+                            android:layout_margin="12dp"
                             android:layout_toLeftOf="@+id/editor_btn_save"
                             android:layout_toStartOf="@+id/editor_btn_save"
                             android:background="@android:color/transparent"

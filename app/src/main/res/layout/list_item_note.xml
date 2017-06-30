@@ -1,57 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="wrap_content"
-                android:layout_height="70dp"
+                android:layout_height="72dp"
     >
 
     <RelativeLayout
         android:layout_width="match_parent"
+        android:layout_marginLeft="72dp"
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/list_item_note_iv_drawText"
-        android:layout_toRightOf="@+id/list_item_note_iv_drawText">
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
 
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/list_item_note_name"
-            android:layout_alignStart="@+id/list_item_note_name"
-            android:layout_below="@+id/list_item_note_name"
-            android:text="@string/noteList_item_text_priority"
-            android:textSize="13sp"/>
+        <RelativeLayout
+            android:layout_centerVertical="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/list_item_note_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginTop="13dp"
-            android:text="@string/noteList_item_text_first_user_s_note"
-            android:textSize="18sp"/>
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/list_item_note_name"
+                android:layout_alignStart="@+id/list_item_note_name"
+                android:layout_below="@+id/list_item_note_name"
+                android:text="@string/noteList_item_text_priority"
+                android:textSize="14sp"/>
 
-        <TextView
-            android:id="@+id/list_item_note_tv_priority"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/list_item_note_name"
-            android:layout_toEndOf="@+id/textView"
-            android:layout_toRightOf="@+id/textView"
-            android:text=""
-            android:textSize="13sp"/>
+            <TextView
+                android:id="@+id/list_item_note_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:textColor="@color/md_light_primary_text"
+                android:text="@string/noteList_item_text_first_user_s_note"
+                android:textSize="16sp"/>
+
+            <TextView
+                android:id="@+id/list_item_note_tv_priority"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/list_item_note_name"
+                android:layout_toEndOf="@+id/textView"
+                android:layout_toRightOf="@+id/textView"
+                android:text=""
+                android:textSize="13sp"/>
+        </RelativeLayout>
     </RelativeLayout>
 
     <ImageView
+
         android:id="@+id/list_item_note_iv_drawText"
-        android:layout_width="52dp"
-        android:layout_height="52dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
+        android:layout_marginLeft="16dp"
         />
 
 </RelativeLayout>

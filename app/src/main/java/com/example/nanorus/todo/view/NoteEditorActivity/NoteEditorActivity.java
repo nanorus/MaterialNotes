@@ -3,6 +3,7 @@ package com.example.nanorus.todo.view.NoteEditorActivity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -15,12 +16,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.NumberPicker;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -43,6 +47,8 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
     EditText editor_et_description;
     EditText editor_et_priority;
     NestedScrollView note_editor_scroll;
+    RelativeLayout editor_rl_appbarFields;
+
 
     int mType;
     int mPosition;
@@ -82,6 +88,7 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
         noteEditor_appbar = (AppBarLayout) findViewById(R.id.noteEditor_appbar);
         editor_tv_description_length = (TextView) findViewById(R.id.editor_tv_description_length);
         editor_et_noteName = (EditText) findViewById(R.id.editor_et_noteName);
+        editor_rl_appbarFields = (RelativeLayout) findViewById(R.id.editor_rl_appbarFields);
         editor_et_description = (EditText) findViewById(R.id.editor_et_description);
         editor_et_priority = (EditText) findViewById(R.id.note_editor_et_priority);
         btn_save = (ImageButton) findViewById(R.id.editor_btn_save);
@@ -107,6 +114,11 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
         mPresenter.setDescriptionSymbolsLengthText(currentSymbolCount, mMaxDescriptionSymbolCount);
 
         setListeners();
+
+
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+            setDescriptionSize();
+
     }
 
     @Override
@@ -118,9 +130,6 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
     public void setDateTime(String dateTime) {
         editor_et_dateTime.setText(dateTime);
     }
-
-
-
 
 
     @Override
@@ -213,7 +222,7 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                   dialog.dismiss();
+                        dialog.dismiss();
                     }
                 });
 
@@ -398,6 +407,38 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
         }
     }
 
+    public int pxToDp(int px) {
+        DisplayMetrics displayMetrics = getActivity().getResources().getDisplayMetrics();
+        int dp = Math.round(px / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+        return dp;
+    }
+
+    public int dpToPx(int dp) {
+        DisplayMetrics displayMetrics = getActivity().getResources().getDisplayMetrics();
+        int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+        return px;
+    }
+
+    private void setDescriptionSize() {
+        ViewGroup.LayoutParams appBarlayoutParams = editor_rl_appbarFields.getLayoutParams();
+
+        DisplayMetrics displayMetrics = getActivity().getResources().getDisplayMetrics();
+        int screenHeight = (int) (displayMetrics.heightPixels / displayMetrics.density);
+        int appBarHeight = (pxToDp(appBarlayoutParams.height));
+        int otherViewsHeight = pxToDp(mToolbar.getLayoutParams().height
+                + editor_tv_description_length.getLayoutParams().height
+        ) + 96;
+        int descriptionHeight = dpToPx(screenHeight - (otherViewsHeight + appBarHeight));
+
+        System.out.println("SCREEN HEIGHT: " + screenHeight);
+        System.out.println("APPBAR HEIGHT: " + appBarHeight);
+        System.out.println("OTHER HEIGHT: " + otherViewsHeight);
+
+        System.out.println("DESCRIPTION HEIGHT: " + descriptionHeight);
+
+        editor_et_description.getLayoutParams().height = descriptionHeight;
+    }
+
     private void setPickerDividerColor(NumberPicker picker, int color) {
 
         java.lang.reflect.Field[] pickerFields = NumberPicker.class.getDeclaredFields();
@@ -411,8 +452,7 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
                     e.printStackTrace();
                 } catch (Resources.NotFoundException e) {
                     e.printStackTrace();
-                }
-                catch (IllegalAccessException e) {
+                } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }
                 break;
