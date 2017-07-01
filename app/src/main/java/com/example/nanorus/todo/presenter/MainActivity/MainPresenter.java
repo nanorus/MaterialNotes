@@ -101,8 +101,8 @@ public class MainPresenter implements MainView.Action {
     @Override
     public void continueSettingNotesList() {
         MainActivityRotateSavePojo savePojo = mActivity.loadRotateData();
-
-        mNoteRecyclerPojos = savePojo.getNoteRecyclerPojos();
+        if (savePojo != null)
+            mNoteRecyclerPojos = savePojo.getNoteRecyclerPojos();
         mActivity.setAdapter(mNoteRecyclerPojos);
 
         // getting observable

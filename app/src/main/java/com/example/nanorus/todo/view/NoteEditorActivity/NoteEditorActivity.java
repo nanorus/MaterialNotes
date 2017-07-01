@@ -116,7 +116,7 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
         setListeners();
 
 
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+        if (isLandScapeOrientation())
             setDescriptionSize();
 
     }
@@ -348,28 +348,43 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
                         return false;
                     }
                 });
-                editor_et_description.setOnTouchListener(new View.OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        noteEditor_appbar.setExpanded(false);
-                        if (!isDescriptionTouched) {
-                            editor_et_description.setText("");
-                            isDescriptionTouched = true;
+
+                if (!isLandScapeOrientation()) {
+                    editor_et_description.setOnTouchListener(new View.OnTouchListener() {
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                            noteEditor_appbar.setExpanded(false);
+                            if (!isDescriptionTouched) {
+                                editor_et_description.setText("");
+                                isDescriptionTouched = true;
+                            }
+                            return false;
                         }
-                        return false;
-                    }
-                });
+                    });
+                } else {
+                    editor_et_description.setOnTouchListener(new View.OnTouchListener() {
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                            if (!isDescriptionTouched) {
+                                editor_et_description.setText("");
+                                isDescriptionTouched = true;
+                            }
+                            return false;
+                        }
+                    });
+                }
                 break;
 
 
             case INTENT_TYPE_UPDATE:
-                editor_et_description.setOnTouchListener(new View.OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        noteEditor_appbar.setExpanded(false);
-                        return false;
-                    }
-                });
+                if (isLandScapeOrientation())
+                    editor_et_description.setOnTouchListener(new View.OnTouchListener() {
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                            noteEditor_appbar.setExpanded(false);
+                            return false;
+                        }
+                    });
 
                 btn_delete.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -419,6 +434,10 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
         return px;
     }
 
+    private boolean isLandScapeOrientation() {
+        return getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
+    }
+
     private void setDescriptionSize() {
         ViewGroup.LayoutParams appBarlayoutParams = editor_rl_appbarFields.getLayoutParams();
 
@@ -429,13 +448,6 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
                 + editor_tv_description_length.getLayoutParams().height
         ) + 96;
         int descriptionHeight = dpToPx(screenHeight - (otherViewsHeight + appBarHeight));
-
-        System.out.println("SCREEN HEIGHT: " + screenHeight);
-        System.out.println("APPBAR HEIGHT: " + appBarHeight);
-        System.out.println("OTHER HEIGHT: " + otherViewsHeight);
-
-        System.out.println("DESCRIPTION HEIGHT: " + descriptionHeight);
-
         editor_et_description.getLayoutParams().height = descriptionHeight;
     }
 

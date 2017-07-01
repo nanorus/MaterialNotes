@@ -114,21 +114,17 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
 
         FragmentManager fm = getSupportFragmentManager();
         mRotateFragment = (RotateFragment) fm.findFragmentByTag(ROTATE_FRAGMENT_TAG);
-
         if (mRotateFragment == null) {
             // new screen
             mIsRotated = false;
-
             mRotateFragment = new RotateFragment();
             fm.beginTransaction().add(mRotateFragment, ROTATE_FRAGMENT_TAG).commit();
-
-            mPresenter = new MainPresenter(getActivity());
-
         } else {
             // rotated screen
             mIsRotated = true;
-            mPresenter = new MainPresenter(getActivity());
         }
+
+        mPresenter = new MainPresenter(getActivity());
 
 
         setDrawer();
@@ -185,6 +181,9 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
 
     @Override
     public void saveRotateData(MainActivityRotateSavePojo data) {
+
+        FragmentManager fm = getSupportFragmentManager();
+
         mRotateFragment.setSavePojo(data);
     }
 
