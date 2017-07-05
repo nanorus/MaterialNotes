@@ -1,5 +1,6 @@
 # TodoList
 Android sample project with MVP and RxJava architecture.
+
 In this project I used Material Design principles and guidelines, SQlite database, RecyclerView etc.
 
 So, this is a simple Todo List with the ability of adding, editing and deleting notes, and the ability of sort them.
