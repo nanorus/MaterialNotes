@@ -25,7 +25,6 @@ import com.example.nanorus.todo.presenter.MainActivity.MainActivityRotateSavePoj
 import com.example.nanorus.todo.presenter.MainActivity.MainPresenter;
 import com.example.nanorus.todo.utils.PreferenceUse;
 import com.example.nanorus.todo.view.NoteEditorActivity.NoteEditorActivity;
-import com.example.nanorus.todo.view.ui.adapters.NoPredictiveAnimationsLinearLayoutManager;
 import com.example.nanorus.todo.view.ui.adapters.NotesRecyclerViewAdapter;
 import com.example.nanorus.todo.view.ui.recyclerView.ItemClickSupport;
 import com.mikepenz.materialdrawer.AccountHeader;
@@ -125,9 +124,10 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
         }
 
         mPresenter = new MainPresenter(getActivity());
-
-
         setDrawer();
+
+
+
 
     }
 
@@ -136,7 +136,8 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
     @Override
     public void setAdapter(List<NoteRecyclerPojo> data) {
         mNotes = data;
-        mLinearLayoutManager = new NoPredictiveAnimationsLinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        mLinearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        //= new NoPredictiveAnimationsLinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         adapter = new NotesRecyclerViewAdapter(mNotes);
         mNotesRecyclerView.setLayoutManager(mLinearLayoutManager);
         mNotesRecyclerView.setAdapter(adapter);

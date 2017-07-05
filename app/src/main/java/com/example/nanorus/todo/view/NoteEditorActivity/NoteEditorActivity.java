@@ -8,9 +8,6 @@ import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -19,12 +16,10 @@ import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.NumberPicker;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -35,8 +30,6 @@ import com.example.nanorus.todo.presenter.NoteEditorPresenter;
 
 public class NoteEditorActivity extends AppCompatActivity implements NoteEditorView.View {
     NoteEditorPresenter mPresenter;
-    AppBarLayout noteEditor_appbar;
-    CollapsingToolbarLayout mCollapsingToolbarLayout;
     Toolbar mToolbar;
     ImageButton btn_save;
     ImageButton btn_delete;
@@ -46,9 +39,6 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
     TextView editor_tv_description_length;
     EditText editor_et_description;
     EditText editor_et_priority;
-    NestedScrollView note_editor_scroll;
-    RelativeLayout editor_rl_appbarFields;
-
 
     int mType;
     int mPosition;
@@ -82,18 +72,13 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
         mToolbar.setNavigationIcon(R.drawable.ic_close_black_24dp);
 
         editor_et_dateTime = (EditText) findViewById(R.id.editor_et_time);
-        mCollapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.noteEditor_collapsing);
-        note_editor_scroll = (NestedScrollView) findViewById(R.id.note_editor_scroll);
         mTitle = (TextView) findViewById(R.id.note_editor_title);
-        noteEditor_appbar = (AppBarLayout) findViewById(R.id.noteEditor_appbar);
         editor_tv_description_length = (TextView) findViewById(R.id.editor_tv_description_length);
         editor_et_noteName = (EditText) findViewById(R.id.editor_et_noteName);
-        editor_rl_appbarFields = (RelativeLayout) findViewById(R.id.editor_rl_appbarFields);
         editor_et_description = (EditText) findViewById(R.id.editor_et_description);
         editor_et_priority = (EditText) findViewById(R.id.note_editor_et_priority);
         btn_save = (ImageButton) findViewById(R.id.editor_btn_save);
         btn_delete = (ImageButton) findViewById(R.id.editor_btn_delete);
-
         switch (mType) {
             case INTENT_TYPE_ADD:
                 mTitle.setText(R.string.toolbar_title_add);
@@ -114,10 +99,6 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
         mPresenter.setDescriptionSymbolsLengthText(currentSymbolCount, mMaxDescriptionSymbolCount);
 
         setListeners();
-
-
-        if (isLandScapeOrientation())
-            setDescriptionSize();
 
     }
 
@@ -199,7 +180,6 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
     }
 
     void setListeners() {
-
 
         // priority
         editor_et_priority.setOnClickListener(new View.OnClickListener() {
@@ -353,7 +333,6 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
                     editor_et_description.setOnTouchListener(new View.OnTouchListener() {
                         @Override
                         public boolean onTouch(View v, MotionEvent event) {
-                            noteEditor_appbar.setExpanded(false);
                             if (!isDescriptionTouched) {
                                 editor_et_description.setText("");
                                 isDescriptionTouched = true;
@@ -361,7 +340,7 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
                             return false;
                         }
                     });
-                } else {
+                } else if (isLandScapeOrientation()) {
                     editor_et_description.setOnTouchListener(new View.OnTouchListener() {
                         @Override
                         public boolean onTouch(View v, MotionEvent event) {
@@ -372,19 +351,12 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
                             return false;
                         }
                     });
+
                 }
                 break;
 
 
             case INTENT_TYPE_UPDATE:
-                if (isLandScapeOrientation())
-                    editor_et_description.setOnTouchListener(new View.OnTouchListener() {
-                        @Override
-                        public boolean onTouch(View v, MotionEvent event) {
-                            noteEditor_appbar.setExpanded(false);
-                            return false;
-                        }
-                    });
 
                 btn_delete.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -420,6 +392,7 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
                 });
                 break;
         }
+
     }
 
     public int pxToDp(int px) {
@@ -435,21 +408,10 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
     }
 
     private boolean isLandScapeOrientation() {
-        return getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
+        return getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
     }
 
-    private void setDescriptionSize() {
-        ViewGroup.LayoutParams appBarlayoutParams = editor_rl_appbarFields.getLayoutParams();
 
-        DisplayMetrics displayMetrics = getActivity().getResources().getDisplayMetrics();
-        int screenHeight = (int) (displayMetrics.heightPixels / displayMetrics.density);
-        int appBarHeight = (pxToDp(appBarlayoutParams.height));
-        int otherViewsHeight = pxToDp(mToolbar.getLayoutParams().height
-                + editor_tv_description_length.getLayoutParams().height
-        ) + 96;
-        int descriptionHeight = dpToPx(screenHeight - (otherViewsHeight + appBarHeight));
-        editor_et_description.getLayoutParams().height = descriptionHeight;
-    }
 
     private void setPickerDividerColor(NumberPicker picker, int color) {
 

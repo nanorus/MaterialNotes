@@ -105,9 +105,12 @@ public class MainPresenter implements MainView.Action {
             mNoteRecyclerPojos = savePojo.getNoteRecyclerPojos();
         mActivity.setAdapter(mNoteRecyclerPojos);
 
+
         // getting observable
         Observable<List<NotePojo>> notePojosObservable = DatabaseManager.getAllNotesObservable(mActivity.getActivity(),
                 mPreferences.loadSortType(), mNoteRecyclerPojos.size());
+
+
         mNoteRecyclerPojosObservable = notePojosObservable.map(new Func1<List<NotePojo>, List<NoteRecyclerPojo>>() {
             @Override
             public List<NoteRecyclerPojo> call(List<NotePojo> notePojos) {
