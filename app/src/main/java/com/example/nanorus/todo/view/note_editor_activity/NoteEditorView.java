@@ -1,4 +1,4 @@
-package com.example.nanorus.todo.view.NoteEditorActivity;
+package com.example.nanorus.todo.view.note_editor_activity;
 
 import android.content.Context;
 import android.support.v7.app.AlertDialog;

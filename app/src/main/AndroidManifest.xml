@@ -12,14 +12,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.example.nanorus.todo.view.MainActivity.MainActivity">
+        <activity android:name="com.example.nanorus.todo.view.main_activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name="com.example.nanorus.todo.view.NoteEditorActivity.NoteEditorActivity">
+        <activity android:name="com.example.nanorus.todo.view.note_editor_activity.NoteEditorActivity">
         </activity>
     </application>
 

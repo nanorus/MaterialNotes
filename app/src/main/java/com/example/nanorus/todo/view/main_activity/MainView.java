@@ -1,4 +1,4 @@
-package com.example.nanorus.todo.view.MainActivity;
+package com.example.nanorus.todo.view.main_activity;
 
 import android.content.Context;
 import android.support.v7.app.AlertDialog;

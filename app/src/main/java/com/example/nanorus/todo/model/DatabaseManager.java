@@ -191,13 +191,12 @@ public final class DatabaseManager {
             if (dateString != null) {
                 dateTimePojo = stringToDateTimePojo(dateString);
             }
-
-            return new NotePojo(
-                    c.getString(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_NAME)),
+            NotePojo notePojo = new NotePojo(c.getString(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_NAME)),
                     dateTimePojo,
                     c.getString(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_DESCRIPTION)),
-                    c.getInt(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_PRIORITY))
-            );
+                    c.getInt(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_PRIORITY)));
+            c.close();
+            return notePojo;
 
         } else return null;
     }
@@ -242,16 +241,14 @@ public final class DatabaseManager {
         if (c.moveToFirst()) {
             id = c.getInt(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_ID));
         }
+        c.close();
         return id;
     }
 
     public static String dateTimePojoToString(DateTimePojo dateTimePojo) {
         // to '2007-01-01 10:00:00'
-
-        String dateTimeString = dateTimePojo.getYear() + "-" + dateTimePojo.getMonth() + "-" + dateTimePojo.getDay() +
+        return dateTimePojo.getYear() + "-" + dateTimePojo.getMonth() + "-" + dateTimePojo.getDay() +
                 " " + dateTimePojo.getHour() + ":" + dateTimePojo.getMinute() + ":00";
-
-        return dateTimeString;
     }
 
     public static DateTimePojo stringToDateTimePojo(String dateTimeString) {

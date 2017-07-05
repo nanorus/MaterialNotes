@@ -1,4 +1,4 @@
-package com.example.nanorus.todo.view.MainActivity;
+package com.example.nanorus.todo.view.main_activity;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

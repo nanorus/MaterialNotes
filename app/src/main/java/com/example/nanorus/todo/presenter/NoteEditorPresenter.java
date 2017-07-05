@@ -6,8 +6,8 @@ import com.example.nanorus.todo.model.DatabaseManager;
 import com.example.nanorus.todo.model.pojo.DateTimePojo;
 import com.example.nanorus.todo.model.pojo.NotePojo;
 import com.example.nanorus.todo.utils.PreferenceUse;
-import com.example.nanorus.todo.view.NoteEditorActivity.NoteEditorActivity;
-import com.example.nanorus.todo.view.NoteEditorActivity.NoteEditorView;
+import com.example.nanorus.todo.view.note_editor_activity.NoteEditorActivity;
+import com.example.nanorus.todo.view.note_editor_activity.NoteEditorView;
 
 import java.util.Calendar;
 

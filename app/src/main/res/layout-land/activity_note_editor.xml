@@ -150,7 +150,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="Date and time"/>
+                    android:text="@string/editor_tv_date"/>
 
                 <EditText
                     android:textSize="13sp"
@@ -211,8 +211,7 @@
                     android:id="@+id/editor_tv_description_length"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="right"
-                    android:text="TextView"/>
+                    android:gravity="right"/>
             </RelativeLayout>
         </android.support.v7.widget.CardView>
 

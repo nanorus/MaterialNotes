@@ -1,4 +1,4 @@
-package com.example.nanorus.todo.view.MainActivity;
+package com.example.nanorus.todo.view.main_activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -22,7 +22,7 @@ import com.example.nanorus.todo.model.pojo.MainActivityRotateSavePojo;
 import com.example.nanorus.todo.model.pojo.NoteRecyclerPojo;
 import com.example.nanorus.todo.presenter.MainPresenter;
 import com.example.nanorus.todo.utils.PreferenceUse;
-import com.example.nanorus.todo.view.NoteEditorActivity.NoteEditorActivity;
+import com.example.nanorus.todo.view.note_editor_activity.NoteEditorActivity;
 import com.example.nanorus.todo.view.ui.adapters.NotesRecyclerViewAdapter;
 import com.example.nanorus.todo.view.ui.recyclerView.ItemClickSupport;
 import com.mikepenz.materialdrawer.AccountHeader;
@@ -163,7 +163,6 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
 
     @Override
     public void saveRotateData(MainActivityRotateSavePojo data) {
-        FragmentManager fm = getSupportFragmentManager();
         mRotateFragment.setSavePojo(data);
     }
 

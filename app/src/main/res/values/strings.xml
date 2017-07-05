@@ -9,11 +9,6 @@
     <string name="noteEditor_text_start_description">Нужно взять поводок, рюкзак, также заодно сходить в магазин.</string>
     <string name="noteList_item_text_priority">"Priority: "</string>
     <string name="noteList_item_text_first_user_s_note">First user\'s note</string>
-    <string name="toolbar_editor_menu_delete_note">Delete note</string>
-    <string name="toolbar_editor_menu_clear_notes">Clear notes</string>
-    <string name="toolbar_title_add">Add note</string>
-    <string name="toolbar_title_edit">Edit note</string>
     <string name="noteEditor_text_start_priority">3</string>
-    <string name="editorNote_text_btn_save">Save</string>
-    <string name="editorNote_text_btn_delete">Delete</string>
+    <string name="editor_tv_date">Date and time</string>
 </resources>

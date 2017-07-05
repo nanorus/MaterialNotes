@@ -7,8 +7,8 @@ import com.example.nanorus.todo.model.pojo.MainActivityRotateSavePojo;
 import com.example.nanorus.todo.model.pojo.NotePojo;
 import com.example.nanorus.todo.model.pojo.NoteRecyclerPojo;
 import com.example.nanorus.todo.utils.PreferenceUse;
-import com.example.nanorus.todo.view.MainActivity.MainActivity;
-import com.example.nanorus.todo.view.MainActivity.MainView;
+import com.example.nanorus.todo.view.main_activity.MainActivity;
+import com.example.nanorus.todo.view.main_activity.MainView;
 
 import java.util.ArrayList;
 import java.util.List;
