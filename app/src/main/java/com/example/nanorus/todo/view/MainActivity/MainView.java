@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.v7.app.AlertDialog;
 
 import com.example.nanorus.todo.model.pojo.NoteRecyclerPojo;
-import com.example.nanorus.todo.presenter.MainActivity.MainActivityRotateSavePojo;
+import com.example.nanorus.todo.model.pojo.MainActivityRotateSavePojo;
 
 import java.util.List;
 

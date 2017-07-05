@@ -1,8 +1,9 @@
-package com.example.nanorus.todo.presenter.MainActivity;
+package com.example.nanorus.todo.presenter;
 
 import com.example.nanorus.todo.bus.EventBus;
 import com.example.nanorus.todo.bus.event.UpdateNotesListEvent;
 import com.example.nanorus.todo.model.DatabaseManager;
+import com.example.nanorus.todo.model.pojo.MainActivityRotateSavePojo;
 import com.example.nanorus.todo.model.pojo.NotePojo;
 import com.example.nanorus.todo.model.pojo.NoteRecyclerPojo;
 import com.example.nanorus.todo.utils.PreferenceUse;
@@ -16,7 +17,6 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 public class MainPresenter implements MainView.Action {
@@ -53,9 +53,7 @@ public class MainPresenter implements MainView.Action {
 
         // getting observable
         Observable<List<NotePojo>> notePojosObservable = DatabaseManager.getAllNotesObservable(mActivity.getActivity(), sortBy, 0);
-        mNoteRecyclerPojosObservable = notePojosObservable.map(new Func1<List<NotePojo>, List<NoteRecyclerPojo>>() {
-            @Override
-            public List<NoteRecyclerPojo> call(List<NotePojo> notePojos) {
+        mNoteRecyclerPojosObservable = notePojosObservable.map(notePojos -> {
                 ArrayList<NoteRecyclerPojo> noteRecyclerPojos = new ArrayList<>();
 
                 for (int i = 0; i < notePojos.size(); i++) {
@@ -67,7 +65,6 @@ public class MainPresenter implements MainView.Action {
                     ));
                 }
                 return noteRecyclerPojos;
-            }
         });
 
         // subscribing
@@ -111,20 +108,17 @@ public class MainPresenter implements MainView.Action {
                 mPreferences.loadSortType(), mNoteRecyclerPojos.size());
 
 
-        mNoteRecyclerPojosObservable = notePojosObservable.map(new Func1<List<NotePojo>, List<NoteRecyclerPojo>>() {
-            @Override
-            public List<NoteRecyclerPojo> call(List<NotePojo> notePojos) {
-                ArrayList<NoteRecyclerPojo> noteRecyclerPojos = new ArrayList<>();
-                for (int i = 0; i < notePojos.size(); i++) {
-                    NotePojo notePojo = notePojos.get(i);
-                    noteRecyclerPojos.add(new NoteRecyclerPojo(
-                            notePojo.getName(),
-                            notePojo.getDateTimePojo(),
-                            notePojo.getPriority()
-                    ));
-                }
-                return noteRecyclerPojos;
+        mNoteRecyclerPojosObservable = notePojosObservable.map(notePojos -> {
+            ArrayList<NoteRecyclerPojo> noteRecyclerPojos = new ArrayList<>();
+            for (int i = 0; i < notePojos.size(); i++) {
+                NotePojo notePojo = notePojos.get(i);
+                noteRecyclerPojos.add(new NoteRecyclerPojo(
+                        notePojo.getName(),
+                        notePojo.getDateTimePojo(),
+                        notePojo.getPriority()
+                ));
             }
+            return noteRecyclerPojos;
         });
         // subscribing
         noteRecyclerPojosSubscriber =

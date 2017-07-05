@@ -1,7 +1,6 @@
 package com.example.nanorus.todo.view.MainActivity;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -13,16 +12,15 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.widget.ImageButton;
 
 import com.example.nanorus.nanojunior.R;
 import com.example.nanorus.todo.bus.EventBus;
 import com.example.nanorus.todo.bus.event.UpdateNotesListEvent;
 import com.example.nanorus.todo.model.DatabaseManager;
+import com.example.nanorus.todo.model.pojo.MainActivityRotateSavePojo;
 import com.example.nanorus.todo.model.pojo.NoteRecyclerPojo;
-import com.example.nanorus.todo.presenter.MainActivity.MainActivityRotateSavePojo;
-import com.example.nanorus.todo.presenter.MainActivity.MainPresenter;
+import com.example.nanorus.todo.presenter.MainPresenter;
 import com.example.nanorus.todo.utils.PreferenceUse;
 import com.example.nanorus.todo.view.NoteEditorActivity.NoteEditorActivity;
 import com.example.nanorus.todo.view.ui.adapters.NotesRecyclerViewAdapter;
@@ -35,7 +33,6 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
-import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
@@ -65,52 +62,39 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
         setContentView(R.layout.activity_main);
         mPreferences = new PreferenceUse(getActivity());
 
+        // views
         main_btn_clear_all = (ImageButton) findViewById(R.id.main_btn_clear_all);
         mToolbar = (Toolbar) findViewById(R.id.main_toolbar);
         mFab = (FloatingActionButton) findViewById(R.id.main_fab_add);
         mSwipeRefresh = (SwipeRefreshLayout) findViewById(R.id.main_swipeRefresh);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
+        // recyclerView
         mNotesRecyclerView = (RecyclerView) findViewById(R.id.main_rv_notesList);
-
-
         LinearLayoutManager manager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         mNotesRecyclerView.setLayoutManager(manager);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mNotesRecyclerView.getContext(),
                 manager.getOrientation());
         mNotesRecyclerView.addItemDecoration(dividerItemDecoration);
-
-        ItemClickSupport.addTo(mNotesRecyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
-            @Override
-            public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                goNoteEditorActivity(NoteEditorActivity.INTENT_TYPE_UPDATE, position);
-            }
-        });
-        ItemClickSupport.addTo(mNotesRecyclerView).setOnItemLongClickListener(new ItemClickSupport.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClicked(RecyclerView recyclerView, final int position, View v) {
-                showAlert(getActivity(), "Delete this note?", "Delete is an irreversible action.", "Delete", "Cancel",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                mPresenter.deleteNote(position);
-                            }
-                        },
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        }
-                );
-                return false;
-            }
+        // recyclerView listener
+        ItemClickSupport.addTo(mNotesRecyclerView).setOnItemClickListener((recyclerView, position, v) -> goNoteEditorActivity(NoteEditorActivity.INTENT_TYPE_UPDATE, position));
+        ItemClickSupport.addTo(mNotesRecyclerView).setOnItemLongClickListener((recyclerView, position, v) -> {
+            showAlert(getActivity(), "Delete this note?", "Delete is an irreversible action.", "Delete", "Cancel",
+                    (dialog, which) -> mPresenter.deleteNote(position),
+                    (dialog, which) -> dialog.dismiss()
+            );
+            return false;
         });
 
+
+        // register all listeners
         setListeners();
-
+        // register bus
         EventBus.getBus().register(this);
 
+        // checking for rotation to save/load data
         FragmentManager fm = getSupportFragmentManager();
         mRotateFragment = (RotateFragment) fm.findFragmentByTag(ROTATE_FRAGMENT_TAG);
         if (mRotateFragment == null) {
@@ -123,21 +107,18 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
             mIsRotated = true;
         }
 
+        // creating presenter
         mPresenter = new MainPresenter(getActivity());
+
+        // navigation drawer
         setDrawer();
-
-
-
-
     }
-
 
 
     @Override
     public void setAdapter(List<NoteRecyclerPojo> data) {
         mNotes = data;
         mLinearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        //= new NoPredictiveAnimationsLinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         adapter = new NotesRecyclerViewAdapter(mNotes);
         mNotesRecyclerView.setLayoutManager(mLinearLayoutManager);
         mNotesRecyclerView.setAdapter(adapter);
@@ -182,9 +163,7 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
 
     @Override
     public void saveRotateData(MainActivityRotateSavePojo data) {
-
         FragmentManager fm = getSupportFragmentManager();
-
         mRotateFragment.setSavePojo(data);
     }
 
@@ -218,40 +197,12 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
 
 
     private void setListeners() {
-
-        main_btn_clear_all.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showAlert(getActivity(), "Clear ALL notes?", "This will remove every note and can't be undone.", "Delete", "Cancel",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                mPresenter.onTouchClearNotes();
-                            }
-                        },
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        }
-                );
-            }
-        });
-
-        mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                EventBus.getBus().post(new UpdateNotesListEvent(mPreferences.loadSortType()));
-            }
-        });
-
-        mFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                goNoteEditorActivity(NoteEditorActivity.INTENT_TYPE_ADD, 0);
-            }
-        });
+        main_btn_clear_all.setOnClickListener(v -> showAlert(getActivity(), "Clear ALL notes?", "This will remove every note and can't be undone.", "Delete", "Cancel",
+                (dialog, which) -> mPresenter.onTouchClearNotes(),
+                (dialog, which) -> dialog.dismiss()
+        ));
+        mSwipeRefresh.setOnRefreshListener(() -> EventBus.getBus().post(new UpdateNotesListEvent(mPreferences.loadSortType())));
+        mFab.setOnClickListener(v -> goNoteEditorActivity(NoteEditorActivity.INTENT_TYPE_ADD, 0));
     }
 
     @Override
@@ -278,12 +229,7 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
                 //.addProfiles(
                 //        new ProfileDrawerItem().withName("Mike Penz").withEmail("mikepenz@gmail.com").withIcon(getResources().getDrawable(R.drawable.profile))
                 //)
-                .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
-                    @Override
-                    public boolean onProfileChanged(View view, IProfile profile, boolean currentProfile) {
-                        return false;
-                    }
-                })
+                .withOnAccountHeaderListener((view, profile, currentProfile) -> false)
                 .build();
 
 
@@ -305,34 +251,31 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
                         new DividerDrawerItem(),
                         sort
                 )
-                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-                    @Override
-                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                        // do something with the clicked item :D
-                        switch ((int) drawerItem.getIdentifier()) {
-                            case 1:
-                                goNoteEditorActivity(NoteEditorActivity.INTENT_TYPE_ADD, 0);
-                                break;
-                            case 21:
-                                mPreferences.saveSortType(DatabaseManager.SORT_BY_DATE_CREATING);
-                                EventBus.getBus().post(new UpdateNotesListEvent(DatabaseManager.SORT_BY_DATE_CREATING));
-                                break;
-                            case 22:
-                                mPreferences.saveSortType(DatabaseManager.SORT_BY_NAME);
-                                EventBus.getBus().post(new UpdateNotesListEvent(DatabaseManager.SORT_BY_NAME));
-                                break;
-                            case 23:
-                                mPreferences.saveSortType(DatabaseManager.SORT_BY_PRIORITY);
-                                EventBus.getBus().post(new UpdateNotesListEvent(DatabaseManager.SORT_BY_PRIORITY));
-                                break;
-                            case 24:
-                                mPreferences.saveSortType(DatabaseManager.SORT_BY_DATE_TIME);
-                                EventBus.getBus().post(new UpdateNotesListEvent(DatabaseManager.SORT_BY_DATE_TIME));
-                                break;
-                        }
-
-                        return false;
+                .withOnDrawerItemClickListener((view, position, drawerItem) -> {
+                    // do something with the clicked item :D
+                    switch ((int) drawerItem.getIdentifier()) {
+                        case 1:
+                            goNoteEditorActivity(NoteEditorActivity.INTENT_TYPE_ADD, 0);
+                            break;
+                        case 21:
+                            mPreferences.saveSortType(DatabaseManager.SORT_BY_DATE_CREATING);
+                            EventBus.getBus().post(new UpdateNotesListEvent(DatabaseManager.SORT_BY_DATE_CREATING));
+                            break;
+                        case 22:
+                            mPreferences.saveSortType(DatabaseManager.SORT_BY_NAME);
+                            EventBus.getBus().post(new UpdateNotesListEvent(DatabaseManager.SORT_BY_NAME));
+                            break;
+                        case 23:
+                            mPreferences.saveSortType(DatabaseManager.SORT_BY_PRIORITY);
+                            EventBus.getBus().post(new UpdateNotesListEvent(DatabaseManager.SORT_BY_PRIORITY));
+                            break;
+                        case 24:
+                            mPreferences.saveSortType(DatabaseManager.SORT_BY_DATE_TIME);
+                            EventBus.getBus().post(new UpdateNotesListEvent(DatabaseManager.SORT_BY_DATE_TIME));
+                            break;
                     }
+
+                    return false;
                 })
                 .build();
     }

@@ -3,7 +3,7 @@ package com.example.nanorus.todo.view.MainActivity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
-import com.example.nanorus.todo.presenter.MainActivity.MainActivityRotateSavePojo;
+import com.example.nanorus.todo.model.pojo.MainActivityRotateSavePojo;
 
 
 public class RotateFragment extends Fragment {

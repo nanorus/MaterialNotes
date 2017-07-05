@@ -48,10 +48,10 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
 
 
     int mYear = 2017;
-    int mMonth = 5;
-    int mDay = 11;
-    int mHour = 14;
-    int mMinute = 35;
+    int mMonth = 0;
+    int mDay = 1;
+    int mHour = 0;
+    int mMinute = 0;
 
     boolean isNameTouched = false;
     boolean isDescriptionTouched = false;
@@ -66,6 +66,7 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
         mType = intent.getIntExtra("type", 2);
 
         mPresenter = new NoteEditorPresenter(getActivity());
+
         mToolbar = (Toolbar) findViewById(R.id.note_editor_toolbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -79,21 +80,17 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
         editor_et_priority = (EditText) findViewById(R.id.note_editor_et_priority);
         btn_save = (ImageButton) findViewById(R.id.editor_btn_save);
         btn_delete = (ImageButton) findViewById(R.id.editor_btn_delete);
+
         switch (mType) {
             case INTENT_TYPE_ADD:
-                mTitle.setText(R.string.toolbar_title_add);
                 btn_delete.setVisibility(View.INVISIBLE);
-                mPresenter.setDateTime(mYear, mMonth, mDay, mHour, mMinute);
-
                 break;
-
             case INTENT_TYPE_UPDATE:
-                mTitle.setText(R.string.toolbar_title_edit);
                 mPosition = intent.getIntExtra("position", 0);
-
-                mPresenter.setFields(mPosition);
                 break;
         }
+
+        mPresenter.setFields(mPosition, mType);
 
         int currentSymbolCount = editor_et_description.getText().length();
         mPresenter.setDescriptionSymbolsLengthText(currentSymbolCount, mMaxDescriptionSymbolCount);
@@ -135,6 +132,11 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
         mDay = day;
         mHour = hour;
         mMinute = minute;
+    }
+
+    @Override
+    public void setTitle(String text) {
+        mTitle.setText(text);
     }
 
     @Override

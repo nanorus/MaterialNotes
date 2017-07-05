@@ -1,6 +1,4 @@
-package com.example.nanorus.todo.presenter.MainActivity;
-
-import com.example.nanorus.todo.model.pojo.NoteRecyclerPojo;
+package com.example.nanorus.todo.model.pojo;
 
 import java.util.List;
 

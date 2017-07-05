@@ -19,7 +19,6 @@ import java.util.Date;
 import java.util.List;
 
 import rx.Observable;
-import rx.Subscriber;
 
 
 public final class DatabaseManager {
@@ -79,104 +78,99 @@ public final class DatabaseManager {
     public static Observable<List<NotePojo>> getAllNotesObservable(final Context context, final int sortBy, final int offset) {
         // System.out.println("new Observable()");
         Observable<List<NotePojo>> observable =
-                Observable.create(
-                        new Observable.OnSubscribe<List<NotePojo>>() {
-                            @Override
-                            public void call(Subscriber<? super List<NotePojo>> subscriber) {
-
-                                DatabaseHelper databaseHelper = new DatabaseHelper(context);
-                                SQLiteDatabase db = databaseHelper.getReadableDatabase();
+                Observable.create(subscriber -> {
+                    DatabaseHelper databaseHelper = new DatabaseHelper(context);
+                    SQLiteDatabase db = databaseHelper.getReadableDatabase();
 
 
-                                String orderBy;
-                                int current_offset = offset;
-                                Cursor c;
-                                // switching orderBy
-                                switch (sortBy) {
-                                    case DatabaseManager.SORT_BY_DATE_CREATING:
-                                        orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_ID;
-                                        break;
-                                    case DatabaseManager.SORT_BY_NAME:
-                                        orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_NAME;
-                                        break;
-                                    case DatabaseManager.SORT_BY_PRIORITY:
-                                        orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_PRIORITY;
-                                        break;
-                                    case DatabaseManager.SORT_BY_DATE_TIME:
-                                        orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_DATE_TIME + " DESC";
-                                        break;
-                                    default:
-                                        orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_ID;
-                                        break;
-                                }
+                    String orderBy;
+                    int current_offset = offset;
+                    Cursor c;
+                    // switching orderBy
+                    switch (sortBy) {
+                        case DatabaseManager.SORT_BY_DATE_CREATING:
+                            orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_ID;
+                            break;
+                        case DatabaseManager.SORT_BY_NAME:
+                            orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_NAME;
+                            break;
+                        case DatabaseManager.SORT_BY_PRIORITY:
+                            orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_PRIORITY;
+                            break;
+                        case DatabaseManager.SORT_BY_DATE_TIME:
+                            orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_DATE_TIME + " DESC";
+                            break;
+                        default:
+                            orderBy = DatabaseContract.DatabaseEntry.COLUMN_NAME_ID;
+                            break;
+                    }
 
-                                // getting count of notes
-                                c = db.rawQuery("SELECT COUNT(" + DatabaseContract.DatabaseEntry.COLUMN_NAME_ID + ") FROM " +
-                                        DatabaseContract.DatabaseEntry.TABLE_NAME_NOTES, null);
+                    // getting count of notes
+                    c = db.rawQuery("SELECT COUNT(" + DatabaseContract.DatabaseEntry.COLUMN_NAME_ID + ") FROM " +
+                            DatabaseContract.DatabaseEntry.TABLE_NAME_NOTES, null);
 
 
-                                if (c.moveToFirst()) {
-                                    int notesCount = c.getInt(0);
-                                    final int limit = 3;
-                                    int queryCount = (notesCount / limit) + 1;
+                    if (c.moveToFirst()) {
+                        int notesCount = c.getInt(0);
+                        final int limit = 3;
+                        int queryCount = (notesCount / limit) + 1;
 
-                                    NotePojo currentNote;
-                                    ArrayList<NotePojo> currentNotesList = new ArrayList<>();
+                        NotePojo currentNote;
+                        ArrayList<NotePojo> currentNotesList = new ArrayList<>();
 
-                                    // System.out.println("notesCount: " + notesCount);
-                                    // System.out.println("queryCount: " + queryCount);
-                                    for (int i = 0; i < queryCount; i++) {
-                                        // making cursor with some notes
-                                        c = db.query(DatabaseContract.DatabaseEntry.TABLE_NAME_NOTES, new String[]{"*"},
-                                                null, null, null, null, String.valueOf(orderBy) + " LIMIT " + limit + " OFFSET " + String.valueOf(current_offset));
-                                        String dateString;
-                                        DateTimePojo dateTimePojo = null;
+                        // System.out.println("notesCount: " + notesCount);
+                        // System.out.println("queryCount: " + queryCount);
+                        for (int i = 0; i < queryCount; i++) {
+                            // making cursor with some notes
+                            c = db.query(DatabaseContract.DatabaseEntry.TABLE_NAME_NOTES, new String[]{"*"},
+                                    null, null, null, null, String.valueOf(orderBy) + " LIMIT " + limit + " OFFSET " + String.valueOf(current_offset));
+                            String dateString;
+                            DateTimePojo dateTimePojo = null;
 
-                                        // creating noteList
-                                        if (c.moveToFirst()) {
-                                            do {
-                                                // getting some notes from cursor
-                                                dateString = c.getString(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_DATE_TIME));
-                                                if (dateString != null) {
-                                                    dateTimePojo = stringToDateTimePojo(dateString);
-                                                }
-                                                currentNote = new NotePojo(
-                                                        c.getString(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_NAME)),
-                                                        dateTimePojo,
-                                                        c.getString(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_DESCRIPTION)),
-                                                        c.getInt(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_PRIORITY))
-                                                );
-                                                currentNotesList.add(currentNote);
-                                            } while (c.moveToNext());
-
-                                            // test
-                                            /*
-                                            for (int ii = 0; ii < currentNotesList.size(); ii++){
-                                                System.out.println("count: " + ii);
-                                                System.out.println("name: " + currentNotesList.get(ii).getName());
-                                                System.out.println("priority: " + currentNotesList.get(ii).getPriority());
+                            // creating noteList
+                            if (c.moveToFirst()) {
+                                do {
+                                    // getting some notes from cursor
+                                    dateString = c.getString(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_DATE_TIME));
+                                    if (dateString != null) {
+                                        dateTimePojo = stringToDateTimePojo(dateString);
                                             }
-                                            */
+                                    currentNote = new NotePojo(
+                                            c.getString(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_NAME)),
+                                            dateTimePojo,
+                                            c.getString(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_DESCRIPTION)),
+                                            c.getInt(c.getColumnIndex(DatabaseContract.DatabaseEntry.COLUMN_NAME_PRIORITY))
+                                    );
+                                    currentNotesList.add(currentNote);
+                                } while (c.moveToNext());
 
-                                            subscriber.onNext(currentNotesList);
-                                            currentNotesList.clear();
-                                            current_offset += limit;
-                                            /*
-                                            try {
-                                                // System.out.println("SLEEP");
-                                                Thread.sleep(10);
-                                            } catch (InterruptedException e) {
-                                                e.printStackTrace();
-                                            }
-                                            */
-                                            // System.out.println("end SLEEP");
-
+                                // test
+                                        /*
+                                        for (int ii = 0; ii < currentNotesList.size(); ii++){
+                                            System.out.println("count: " + ii);
+                                            System.out.println("name: " + currentNotesList.get(ii).getName());
+                                            System.out.println("priority: " + currentNotesList.get(ii).getPriority());
                                         }
-                                        c.close();
+                                        */
+
+                                subscriber.onNext(currentNotesList);
+                                currentNotesList.clear();
+                                current_offset += limit;
+                                        /*
+                                        try {
+                                            // System.out.println("SLEEP");
+                                            Thread.sleep(10);
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        }
+                                        */
+                                // System.out.println("end SLEEP");
+
                                     }
-                                    subscriber.onCompleted();
-                                    databaseHelper.close();
+                            c.close();
                                 }
+                        subscriber.onCompleted();
+                        databaseHelper.close();
                             }
                         });
         // creating and returning Observable

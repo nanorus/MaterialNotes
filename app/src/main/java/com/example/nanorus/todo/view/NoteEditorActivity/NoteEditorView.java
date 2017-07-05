@@ -11,7 +11,7 @@ public interface NoteEditorView {
 
         void deleteNote(int position);
 
-        void setFields(int position);
+        void setFields(int position, int actionType);
 
         /*
         void addNotification( parameters );
@@ -44,6 +44,8 @@ public interface NoteEditorView {
         void setDescription(String description);
 
         void setDateTimeVariables(int year, int month, int day, int hour, int minute);
+
+        void setTitle(String text);
 
         void showAlert(Context context, String title, String message,
                        String buttonPositiveTitle, String buttonNegativeTitle,

@@ -1,7 +1,5 @@
 package com.example.nanorus.todo.presenter;
 
-import android.graphics.Color;
-
 import com.example.nanorus.todo.bus.EventBus;
 import com.example.nanorus.todo.bus.event.UpdateNotesListEvent;
 import com.example.nanorus.todo.model.DatabaseManager;
@@ -10,6 +8,8 @@ import com.example.nanorus.todo.model.pojo.NotePojo;
 import com.example.nanorus.todo.utils.PreferenceUse;
 import com.example.nanorus.todo.view.NoteEditorActivity.NoteEditorActivity;
 import com.example.nanorus.todo.view.NoteEditorActivity.NoteEditorView;
+
+import java.util.Calendar;
 
 
 public class NoteEditorPresenter implements NoteEditorView.Action {
@@ -23,34 +23,24 @@ public class NoteEditorPresenter implements NoteEditorView.Action {
 
     @Override
     public void onFabClicked(int type, int position, String name, String description, String priority, DateTimePojo dateTimePojo) {
-
-
         if (!name.isEmpty()) {
             try {
                 NotePojo notePojo = new NotePojo(name, dateTimePojo, description, Integer.parseInt(priority));
                 switch (type) {
                     case NoteEditorActivity.INTENT_TYPE_ADD:
-
-
                         DatabaseManager.addNote(notePojo, mActivity.getActivity());
-
                         // add new notification
-
                         break;
 
                     case NoteEditorActivity.INTENT_TYPE_UPDATE:
                         int id = DatabaseManager.getNoteDbIdByPosition(mActivity.getActivity(), position, mPreferences.loadSortType());
                         DatabaseManager.updateNote(notePojo, mActivity.getActivity(), id);
-
                         // delete old notification
                         // add new notification
-
                         break;
                 }
-
                 EventBus.getBus().post(new UpdateNotesListEvent(mPreferences.loadSortType()));
                 mActivity.onBackPressedView();
-
             } catch (java.lang.NumberFormatException e) {
                 mActivity.showToastShot("Enter priority, NUMBER");
             }
@@ -67,64 +57,54 @@ public class NoteEditorPresenter implements NoteEditorView.Action {
         DatabaseManager.deleteNote(id, mActivity.getActivity());
         mActivity.onBackPressedView();
         EventBus.getBus().post(new UpdateNotesListEvent(mPreferences.loadSortType()));
-
         // delete notification
-
     }
 
 
     @Override
-    public void setFields(int position) {
-
-
-
-        int id = DatabaseManager.getNoteDbIdByPosition(mActivity.getActivity(), position, mPreferences.loadSortType());
-        NotePojo notePojo = DatabaseManager.getNote(mActivity.getActivity(), id);
-
-        mActivity.setName(notePojo.getName());
-        mActivity.setDescription(notePojo.getDescription());
-        mActivity.setPriority(String.valueOf(notePojo.getPriority()));
-
-        int color;
-        switch (notePojo.getPriority()) {
-            case 1:
-                color = Color.parseColor("#E91E63");
+    public void setFields(int position, int actionType) {
+        switch (actionType) {
+            case NoteEditorActivity.INTENT_TYPE_ADD:
+                mActivity.setTitle("Add note");
+                Calendar c = Calendar.getInstance();
+                int year = c.get(Calendar.YEAR);
+                int month = c.get(Calendar.MONTH);
+                int day = c.get(Calendar.DAY_OF_MONTH);
+                int hour = c.get(Calendar.HOUR_OF_DAY);
+                int minute = c.get(Calendar.MINUTE);
+                setDateTime(year, month, day, hour, minute);
                 break;
-            case 2:
-                color = Color.parseColor("#9C27B0");
-                break;
-            case 3:
-                color = Color.parseColor("#2196F3");
-                break;
-            default:
-                color = Color.parseColor("#2196F3");
+            case NoteEditorActivity.INTENT_TYPE_UPDATE:
+                mActivity.setTitle("Edit note note");
+
+                int id = DatabaseManager.getNoteDbIdByPosition(mActivity.getActivity(), position, mPreferences.loadSortType());
+                NotePojo notePojo = DatabaseManager.getNote(mActivity.getActivity(), id);
+
+                mActivity.setName(notePojo.getName());
+                mActivity.setDescription(notePojo.getDescription());
+                mActivity.setPriority(String.valueOf(notePojo.getPriority()));
+
+                // set date and time
+                if (notePojo.getDateTimePojo() != null) {
+                    setDateTime(notePojo.getDateTimePojo().getYear(), notePojo.getDateTimePojo().getMonth(),
+                            notePojo.getDateTimePojo().getDay(), notePojo.getDateTimePojo().getHour(),
+                            notePojo.getDateTimePojo().getMinute()
+                    );
+                }
                 break;
         }
 
-
-        // set date and time
-        if (notePojo.getDateTimePojo() != null) {
-
-            setDateTime(notePojo.getDateTimePojo().getYear(), notePojo.getDateTimePojo().getMonth(),
-                    notePojo.getDateTimePojo().getDay(), notePojo.getDateTimePojo().getHour(),
-                    notePojo.getDateTimePojo().getMinute()
-            );
-
-
-        }
 
     }
 
     @Override
     public void setDescriptionSymbolsLengthText(int currentLength, int maxLength) {
         String text;
-
         if (currentLength < maxLength) {
             text = String.valueOf(currentLength) + "/" + maxLength;
         } else {
             text = "Достигнут лимит символов " + String.valueOf(currentLength) + "/" + maxLength;
         }
-
         mActivity.setDescriptionSymbolsLengthText(text);
     }
 
