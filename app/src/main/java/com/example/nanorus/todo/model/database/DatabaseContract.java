@@ -20,8 +20,8 @@ public final class DatabaseContract {
         public static final String TEXT_TYPE = " TEXT";
         public static final String COMMA_SEP = ",";
 
-        public static final String FIRST_NOTE_NAME = "Начать жизнь с нуля";
-        public static final String FIRST_NOTE_DESCRIPTION = "Делаем зарядку, пьем много воды.\nДышим свежим воздухом.";
+        public static final String FIRST_NOTE_NAME = "Start life anew";
+        public static final String FIRST_NOTE_DESCRIPTION = "Do exercise, drink plenty of water.\nBreathe fresh air.";
         public static final String FIRST_NOTE_PRIORITY = "2";
         public static final String FIRST_NOTE_DATE_TIME = "2007-01-01 10:00:00";
 

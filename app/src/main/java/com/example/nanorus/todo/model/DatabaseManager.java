@@ -207,7 +207,9 @@ public final class DatabaseManager {
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
         db.execSQL(DatabaseContract.DatabaseEntry.SQL_DELETE_TABLE_NOTES);
         db.execSQL(DatabaseContract.DatabaseEntry.SQL_CREATE_TABLE_NOTES);
-        db.execSQL(DatabaseContract.DatabaseEntry.SQL_INSERT_FIRST_ENTRY_INTO_NOTES);
+
+        // create first test note
+        // db.execSQL(DatabaseContract.DatabaseEntry.SQL_INSERT_FIRST_ENTRY_INTO_NOTES);
     }
 
     public static int getNoteDbIdByPosition(Context context, int position, int sortType) {
