@@ -6,15 +6,47 @@
     android:layout_height="match_parent">
 
 
-    <include
+    <android.support.v7.widget.Toolbar
         android:id="@+id/main_toolbar"
-        layout="@layout/main_toolbar"/>
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:theme="?attr/actionBarTheme"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageButton
+                android:id="@+id/main_btn_clear_all"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_margin="12dp"
+                android:background="@android:color/transparent"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/ic_delete_sweep_black_24dp"/>
+
+            <TextView
+                android:id="@+id/main_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@string/app_name"
+                android:textColor="@android:color/black"
+                android:textSize="18sp"/>
+        </RelativeLayout>
+
+    </android.support.v7.widget.Toolbar>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="4dp"
-        android:layout_marginTop="?attr/actionBarSize"
-        android:background="@drawable/toolbar_shadow"/>
+        android:background="@drawable/toolbar_shadow"
+        android:layout_below="@+id/main_toolbar"/>
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/main_swipeRefresh"
@@ -28,16 +60,14 @@
             android:layout_height="match_parent"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:paddingTop="8dp"
             android:scrollbars="vertical"
             />
     </android.support.v4.widget.SwipeRefreshLayout>
 
 
     <android.support.design.widget.FloatingActionButton
-        app:elevation="6dp"
-
         android:id="@+id/main_fab_add"
+
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -46,5 +76,6 @@
         android:layout_margin="15dp"
         android:src="@drawable/ic_add_black_24dp"
         app:backgroundTint="@color/colorAccent"
+        app:elevation="6dp"
         />
 </RelativeLayout>
