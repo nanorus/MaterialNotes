@@ -150,7 +150,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="@string/editor_tv_date"/>
+                    android:text="@string/noteEditor_text_date"/>
 
                 <EditText
                     android:textSize="13sp"

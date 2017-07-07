@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
         // recyclerView listener
         ItemClickSupport.addTo(mNotesRecyclerView).setOnItemClickListener((recyclerView, position, v) -> goNoteEditorActivity(NoteEditorActivity.INTENT_TYPE_UPDATE, position));
         ItemClickSupport.addTo(mNotesRecyclerView).setOnItemLongClickListener((recyclerView, position, v) -> {
-            showAlert(getActivity(), "Delete this note?", "Delete is an irreversible action.", "Delete", "Cancel",
+            showAlert(getActivity(), "Delete this note?", "This action cannot be undone.", "Delete", "Cancel",
                     (dialog, which) -> mPresenter.deleteNote(position),
                     (dialog, which) -> dialog.dismiss()
             );

@@ -75,7 +75,7 @@ public class NoteEditorPresenter implements NoteEditorView.Action {
                 setDateTime(year, month, day, hour, minute);
                 break;
             case NoteEditorActivity.INTENT_TYPE_UPDATE:
-                mActivity.setTitle("Edit note note");
+                mActivity.setTitle("Edit note");
 
                 int id = DatabaseManager.getNoteDbIdByPosition(mActivity.getActivity(), position, mPreferences.loadSortType());
                 NotePojo notePojo = DatabaseManager.getNote(mActivity.getActivity(), id);

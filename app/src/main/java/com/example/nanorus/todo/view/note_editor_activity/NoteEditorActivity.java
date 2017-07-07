@@ -305,7 +305,7 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
 
             case INTENT_TYPE_UPDATE:
 
-                btn_delete.setOnClickListener(v -> showAlert(getActivity(), "Delete this note?", "Delete is an irreversible action.", "Delete", "Cancel",
+                btn_delete.setOnClickListener(v -> showAlert(getActivity(), "Delete this note?", "This action cannot be undone.", "Delete", "Cancel",
                         (dialog, which) -> mPresenter.deleteNote(mPosition),
                         (dialog, which) -> dialog.dismiss()
                 ));

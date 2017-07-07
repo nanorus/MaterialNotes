@@ -130,8 +130,7 @@
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
                         android:layout_alignParentTop="true"
-                        android:text="@string/noteEditor_text_task"
-                        app:layout_collapseMode="parallax"/>
+                        android:text="@string/noteEditor_text_task"/>
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -186,7 +185,7 @@
                         android:layout_alignParentStart="true"
                         android:layout_below="@+id/note_editor_et_priority"
                         android:layout_marginTop="4dp"
-                        android:text="@string/editor_tv_date"/>
+                        android:text="@string/noteEditor_text_date"/>
 
                     <TextView
                         android:textSize="13sp"
