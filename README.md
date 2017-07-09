@@ -1,5 +1,5 @@
 # TodoList
-Android sample project with MVP and RxJava architecture.
+Android sample project with MVP, RxJava and EventBus (Otto) architecture.
 
 In this project I used Material Design principles and guidelines, SQlite database, RecyclerView etc.
 
