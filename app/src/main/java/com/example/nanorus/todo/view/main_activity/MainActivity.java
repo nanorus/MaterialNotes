@@ -78,8 +78,10 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mNotesRecyclerView.getContext(),
                 manager.getOrientation());
         mNotesRecyclerView.addItemDecoration(dividerItemDecoration);
+
         // recyclerView listener
-        ItemClickSupport.addTo(mNotesRecyclerView).setOnItemClickListener((recyclerView, position, v) -> goNoteEditorActivity(NoteEditorActivity.INTENT_TYPE_UPDATE, position));
+        ItemClickSupport.addTo(mNotesRecyclerView).setOnItemClickListener(
+                (recyclerView, position, v) -> goNoteEditorActivity(NoteEditorActivity.INTENT_TYPE_UPDATE, position));
         ItemClickSupport.addTo(mNotesRecyclerView).setOnItemLongClickListener((recyclerView, position, v) -> {
             showAlert(getActivity(), "Delete this note?", "This action cannot be undone.", "Delete", "Cancel",
                     (dialog, which) -> mPresenter.deleteNote(position),

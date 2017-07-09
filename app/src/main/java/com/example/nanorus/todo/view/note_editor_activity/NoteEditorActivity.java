@@ -12,7 +12,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -194,16 +193,13 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
             builder.setPositiveButton("Pick", (dialog, which) -> editor_et_priority.setText(String.valueOf(numberPicker.getValue())));
             builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
 
-
             builder.setView(numberPicker);
-
             builder.show();
         });
 
 
         // day and time
         editor_et_dateTime.setOnClickListener(v -> {
-
             final AlertDialog.Builder dateBilder = new AlertDialog.Builder(getActivity());
             final DatePicker datePicker = new DatePicker(getActivity());
             dateBilder.setView(datePicker);
@@ -232,11 +228,9 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
 
                 });
                 timeBuilder.setNegativeButton("Cancel", (dialog1, which1) -> dialog1.dismiss());
-
                 timeBuilder.show();
             });
             dateBilder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
-
             dateBilder.show();
         });
 
@@ -262,7 +256,6 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
 
         mToolbar.setNavigationOnClickListener(v -> onBackPressed());
 
-
         switch (mType) {
             case INTENT_TYPE_ADD:
                 // save
@@ -273,7 +266,6 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
                         editor_et_description.getText().toString(),
                         editor_et_priority.getText().toString(),
                         getDateTimePojo()));
-
                 editor_et_noteName.setOnTouchListener((v, event) -> {
                     if (!isNameTouched) {
                         editor_et_noteName.setText("");
@@ -281,7 +273,6 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
                     }
                     return false;
                 });
-
                 if (!isLandScapeOrientation()) {
                     editor_et_description.setOnTouchListener((v, event) -> {
                         if (!isDescriptionTouched) {
@@ -322,24 +313,11 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
 
     }
 
-    public int pxToDp(int px) {
-        DisplayMetrics displayMetrics = getActivity().getResources().getDisplayMetrics();
-        return Math.round(px / (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
-    }
-
-    public int dpToPx(int dp) {
-        DisplayMetrics displayMetrics = getActivity().getResources().getDisplayMetrics();
-        return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
-    }
-
     private boolean isLandScapeOrientation() {
         return getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
     }
 
-
-
     private void setPickerDividerColor(NumberPicker picker, int color) {
-
         java.lang.reflect.Field[] pickerFields = NumberPicker.class.getDeclaredFields();
         for (java.lang.reflect.Field pf : pickerFields) {
             if (pf.getName().equals("mSelectionDivider")) {

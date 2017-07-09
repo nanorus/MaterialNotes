@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Todo list</string>
+    <string name="app_name">Material Notes</string>
     <string name="noteList_item_text_priority">"Priority: "</string>
     <string name="noteList_item_text_first_user_s_note">First user\'s note</string>
     <string name="noteEditor_text_priority">Priority</string>
