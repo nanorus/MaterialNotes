@@ -3,93 +3,102 @@ package com.example.nanorus.todo.presenter;
 import com.example.nanorus.todo.bus.EventBus;
 import com.example.nanorus.todo.bus.event.UpdateNotesListEvent;
 import com.example.nanorus.todo.model.DatabaseManager;
-import com.example.nanorus.todo.model.pojo.DateTimePojo;
 import com.example.nanorus.todo.model.pojo.NotePojo;
 import com.example.nanorus.todo.utils.PreferenceUse;
+import com.example.nanorus.todo.view.note_editor_activity.INoteEditorActivity;
 import com.example.nanorus.todo.view.note_editor_activity.NoteEditorActivity;
-import com.example.nanorus.todo.view.note_editor_activity.NoteEditorView;
 
 import java.util.Calendar;
 
 
-public class NoteEditorPresenter implements NoteEditorView.Action {
-    private NoteEditorView.View mActivity;
+public class NoteEditorPresenter implements INoteEditorPresenter {
+    private INoteEditorActivity mView;
     private PreferenceUse mPreferences;
 
-    public NoteEditorPresenter(NoteEditorActivity activity) {
-        mActivity = activity;
-        mPreferences = new PreferenceUse(activity);
+    public NoteEditorPresenter(INoteEditorActivity view) {
+        mView = view;
+        mPreferences = new PreferenceUse(mView.getContext());
     }
 
     @Override
-    public void onFabClicked(int type, int position, String name, String description, String priority, DateTimePojo dateTimePojo) {
-        if (!name.isEmpty()) {
+    public void onFabClicked() {
+        if (!mView.getName().isEmpty()) {
             try {
-                NotePojo notePojo = new NotePojo(name, dateTimePojo, description, Integer.parseInt(priority));
-                switch (type) {
+                NotePojo notePojo = new NotePojo(mView.getName(), mView.getDateTimePojo(),
+                        mView.getDescription(), Integer.parseInt(mView.getPriority()));
+                switch (mView.getType()) {
                     case NoteEditorActivity.INTENT_TYPE_ADD:
-                        DatabaseManager.addNote(notePojo, mActivity.getActivity());
+                        DatabaseManager.addNote(notePojo, mView.getContext());
                         // add new notification
                         break;
 
                     case NoteEditorActivity.INTENT_TYPE_UPDATE:
-                        int id = DatabaseManager.getNoteDbIdByPosition(mActivity.getActivity(), position, mPreferences.loadSortType());
-                        DatabaseManager.updateNote(notePojo, mActivity.getActivity(), id);
+                        int id = DatabaseManager.getNoteDbIdByPosition(mView.getContext(),
+                                mView.getPosition(), mPreferences.loadSortType());
+                        DatabaseManager.updateNote(notePojo, mView.getContext(), id);
                         // delete old notification
                         // add new notification
                         break;
                 }
                 EventBus.getBus().post(new UpdateNotesListEvent(mPreferences.loadSortType()));
-                mActivity.onBackPressedView();
+                mView.onBackPressedView();
             } catch (java.lang.NumberFormatException e) {
-                mActivity.showToastShot("Enter priority, NUMBER");
+                mView.showToastShot("Enter priority, NUMBER");
             }
         } else {
-            mActivity.showToastShot("Enter Name");
+            mView.showToastShot("Enter Name");
         }
 
 
     }
 
     @Override
-    public void deleteNote(int position) {
-        int id = DatabaseManager.getNoteDbIdByPosition(mActivity.getActivity(), position, mPreferences.loadSortType());
-        DatabaseManager.deleteNote(id, mActivity.getActivity());
-        mActivity.onBackPressedView();
+    public void deleteNote() {
+        int id = DatabaseManager.getNoteDbIdByPosition(mView.getContext(), mView.getPosition(),
+                mPreferences.loadSortType());
+        DatabaseManager.deleteNote(id, mView.getContext());
+        mView.onBackPressedView();
         EventBus.getBus().post(new UpdateNotesListEvent(mPreferences.loadSortType()));
         // delete notification
     }
 
 
     @Override
-    public void setFields(int position, int actionType) {
-        switch (actionType) {
+    public void setFields() {
+        switch (mView.getType()) {
             case NoteEditorActivity.INTENT_TYPE_ADD:
-                mActivity.setTitle("Add note");
+                mView.setTitle("Add note");
                 Calendar c = Calendar.getInstance();
-                int year = c.get(Calendar.YEAR);
-                int month = c.get(Calendar.MONTH);
-                int day = c.get(Calendar.DAY_OF_MONTH);
-                int hour = c.get(Calendar.HOUR_OF_DAY);
-                int minute = c.get(Calendar.MINUTE);
-                setDateTime(year, month, day, hour, minute);
+                mView.setDateTimeVariables(
+                        c.get(Calendar.YEAR),
+                        c.get(Calendar.MONTH),
+                        c.get(Calendar.DAY_OF_MONTH),
+                        c.get(Calendar.HOUR_OF_DAY),
+                        c.get(Calendar.MINUTE)
+                );
+                setDateTime();
                 break;
             case NoteEditorActivity.INTENT_TYPE_UPDATE:
-                mActivity.setTitle("Edit note");
+                mView.setTitle("Edit note");
 
-                int id = DatabaseManager.getNoteDbIdByPosition(mActivity.getActivity(), position, mPreferences.loadSortType());
-                NotePojo notePojo = DatabaseManager.getNote(mActivity.getActivity(), id);
+                int id = DatabaseManager.getNoteDbIdByPosition(mView.getContext(), mView.getPosition(),
+                        mPreferences.loadSortType());
+                NotePojo notePojo = DatabaseManager.getNote(mView.getContext(), id);
 
-                mActivity.setName(notePojo.getName());
-                mActivity.setDescription(notePojo.getDescription());
-                mActivity.setPriority(String.valueOf(notePojo.getPriority()));
+                mView.setName(notePojo.getName());
+                mView.setDescription(notePojo.getDescription());
+                mView.setPriority(String.valueOf(notePojo.getPriority()));
 
                 // set date and time
                 if (notePojo.getDateTimePojo() != null) {
-                    setDateTime(notePojo.getDateTimePojo().getYear(), notePojo.getDateTimePojo().getMonth(),
-                            notePojo.getDateTimePojo().getDay(), notePojo.getDateTimePojo().getHour(),
+                    mView.setDateTimeVariables(
+                            notePojo.getDateTimePojo().getYear(),
+                            notePojo.getDateTimePojo().getMonth(),
+                            notePojo.getDateTimePojo().getDay(),
+                            notePojo.getDateTimePojo().getHour(),
                             notePojo.getDateTimePojo().getMinute()
                     );
+                    setDateTime();
                 }
                 break;
         }
@@ -97,28 +106,35 @@ public class NoteEditorPresenter implements NoteEditorView.Action {
 
     }
 
+
     @Override
-    public void setDescriptionSymbolsLengthText(int currentLength, int maxLength) {
+    public void onDescriptionTextChanged() {
+        setDescriptionSymbolsLengthText();
+    }
+
+    @Override
+    public void setDescriptionSymbolsLengthText() {
         String text;
+        int currentLength = mView.getCurrentDescriptionLength();
+        int maxLength = mView.getMaxDescriptionLength();
         if (currentLength < maxLength) {
             text = String.valueOf(currentLength) + "/" + maxLength;
         } else {
             text = "Достигнут лимит символов " + String.valueOf(currentLength) + "/" + maxLength;
         }
-        mActivity.setDescriptionSymbolsLengthText(text);
+        mView.setDescriptionSymbolsLengthText(text);
     }
 
     @Override
     public void releasePresenter() {
-        mActivity = null;
+        mView = null;
     }
 
     @Override
-    public void setDateTime(int year, int month, int day, int hour, int minute) {
-        mActivity.setDateTimeVariables(year, month, day, hour, minute);
+    public void setDateTime() {
 
         String monthString;
-        switch (month) {
+        switch (mView.getMonth()) {
             case 0:
                 monthString = "Jan";
                 break;
@@ -160,17 +176,17 @@ public class NoteEditorPresenter implements NoteEditorView.Action {
                 break;
         }
         String minuteString;
-        if (minute < 10) {
-            minuteString = "0" + String.valueOf(minute);
-        } else minuteString = String.valueOf(minute);
+        if (mView.getMinute() < 10) {
+            minuteString = "0" + String.valueOf(mView.getMinute());
+        } else minuteString = String.valueOf(mView.getMinute());
 
         String hourString;
-        if (hour < 10) {
-            hourString = "0" + String.valueOf(hour);
-        } else hourString = String.valueOf(hour);
+        if (mView.getHour() < 10) {
+            hourString = "0" + String.valueOf(mView.getHour());
+        } else hourString = String.valueOf(mView.getHour());
 
-        String dateTime = String.valueOf(day) + " " + monthString + " " + String.valueOf(year) +
+        String dateTime = String.valueOf(mView.getDay()) + " " + monthString + " " + String.valueOf(mView.getYear()) +
                 ", " + hourString + ":" + minuteString;
-        mActivity.setDateTime(dateTime);
+        mView.setDateTime(dateTime);
     }
 }

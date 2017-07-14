@@ -1,5 +1,6 @@
 package com.example.nanorus.todo.view.note_editor_activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -25,7 +26,7 @@ import com.example.nanorus.nanojunior.R;
 import com.example.nanorus.todo.model.pojo.DateTimePojo;
 import com.example.nanorus.todo.presenter.NoteEditorPresenter;
 
-public class NoteEditorActivity extends AppCompatActivity implements NoteEditorView.View {
+public class NoteEditorActivity extends AppCompatActivity implements INoteEditorActivity {
     NoteEditorPresenter mPresenter;
     Toolbar mToolbar;
     ImageButton btn_save;
@@ -37,11 +38,13 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
     EditText editor_et_description;
     EditText editor_et_priority;
 
+
+    private int mMaxDescriptionLength = 500;
+
     int mType;
     int mPosition;
     public final static int INTENT_TYPE_UPDATE = 1;
     public final static int INTENT_TYPE_ADD = 2;
-    public int mMaxDescriptionSymbolCount = 500;
 
 
     int mYear = 2017;
@@ -62,7 +65,7 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
         Intent intent = getIntent();
         mType = intent.getIntExtra("type", 2);
 
-        mPresenter = new NoteEditorPresenter(getActivity());
+        mPresenter = new NoteEditorPresenter(getView());
 
         mToolbar = (Toolbar) findViewById(R.id.note_editor_toolbar);
         setSupportActionBar(mToolbar);
@@ -87,18 +90,67 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
                 break;
         }
 
-        mPresenter.setFields(mPosition, mType);
+        mPresenter.setFields();
 
-        int currentSymbolCount = editor_et_description.getText().length();
-        mPresenter.setDescriptionSymbolsLengthText(currentSymbolCount, mMaxDescriptionSymbolCount);
+        mPresenter.setDescriptionSymbolsLengthText();
 
         setListeners();
 
     }
 
     @Override
+    public int getType() {
+        return mType;
+    }
+
+    @Override
+    public int getPosition() {
+        return mPosition;
+    }
+
+    @Override
+    public String getName() {
+        return editor_et_noteName.getText().toString();
+    }
+
+    @Override
+    public String getDescription() {
+        return editor_et_description.getText().toString();
+    }
+
+    @Override
+    public String getPriority() {
+        return editor_et_priority.getText().toString();
+    }
+
+    @Override
     public DateTimePojo getDateTimePojo() {
         return new DateTimePojo(mYear, mMonth, mDay, mHour, mMinute);
+    }
+
+    @Override
+    public int getYear() {
+        return mYear;
+    }
+
+    @Override
+    public int getMonth() {
+        return mMonth;
+    }
+
+    @Override
+    public int getDay() {
+        return mDay;
+    }
+
+    @Override
+    public int getHour() {
+        return mHour;
+    }
+
+    @Override
+    public int getMinute() {
+        return mMinute;
     }
 
     @Override
@@ -157,8 +209,23 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
     }
 
     @Override
-    public NoteEditorActivity getActivity() {
+    public INoteEditorActivity getView() {
         return this;
+    }
+
+    @Override
+    public Activity getContext() {
+        return this;
+    }
+
+    @Override
+    public int getCurrentDescriptionLength() {
+        return editor_et_description.getText().toString().length();
+    }
+
+    @Override
+    public int getMaxDescriptionLength() {
+        return mMaxDescriptionLength;
     }
 
     @Override
@@ -168,7 +235,7 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
 
     @Override
     public void showToastShot(String text) {
-        Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), text, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -182,8 +249,8 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
 
         // priority
         editor_et_priority.setOnClickListener(v -> {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            final NumberPicker numberPicker = new NumberPicker(getActivity());
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            final NumberPicker numberPicker = new NumberPicker(getContext());
             numberPicker.setMinValue(1);
             numberPicker.setMaxValue(15);
             numberPicker.setValue(Integer.parseInt(editor_et_priority.getText().toString()));
@@ -200,16 +267,16 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
 
         // day and time
         editor_et_dateTime.setOnClickListener(v -> {
-            final AlertDialog.Builder dateBilder = new AlertDialog.Builder(getActivity());
-            final DatePicker datePicker = new DatePicker(getActivity());
+            final AlertDialog.Builder dateBilder = new AlertDialog.Builder(getContext());
+            final DatePicker datePicker = new DatePicker(getContext());
             dateBilder.setView(datePicker);
             dateBilder.setPositiveButton("Set date", (dialog, which) -> {
                 mYear = datePicker.getYear();
                 mMonth = datePicker.getMonth();
                 mDay = datePicker.getDayOfMonth();
 
-                AlertDialog.Builder timeBuilder = new AlertDialog.Builder(getActivity());
-                final TimePicker timePicker = new TimePicker(getActivity());
+                AlertDialog.Builder timeBuilder = new AlertDialog.Builder(getContext());
+                final TimePicker timePicker = new TimePicker(getContext());
                 timePicker.setIs24HourView(true);
                 timeBuilder.setView(timePicker);
                 timeBuilder.setPositiveButton("set time", (dialog12, which12) -> {
@@ -224,7 +291,7 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
                         mHour = timePicker.getCurrentHour();
                     }
 
-                    mPresenter.setDateTime(mYear, mMonth, mDay, mHour, mMinute);
+                    mPresenter.setDateTime();
 
                 });
                 timeBuilder.setNegativeButton("Cancel", (dialog1, which1) -> dialog1.dismiss());
@@ -244,8 +311,7 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                int currentSymbolCount = editor_et_description.getText().length();
-                mPresenter.setDescriptionSymbolsLengthText(currentSymbolCount, mMaxDescriptionSymbolCount);
+                mPresenter.onDescriptionTextChanged();
             }
 
             @Override
@@ -255,17 +321,10 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
         });
 
         mToolbar.setNavigationOnClickListener(v -> onBackPressed());
+        btn_save.setOnClickListener(v -> mPresenter.onFabClicked());
 
         switch (mType) {
             case INTENT_TYPE_ADD:
-                // save
-                btn_save.setOnClickListener(v -> mPresenter.onFabClicked(
-                        NoteEditorActivity.INTENT_TYPE_ADD,
-                        0,
-                        editor_et_noteName.getText().toString(),
-                        editor_et_description.getText().toString(),
-                        editor_et_priority.getText().toString(),
-                        getDateTimePojo()));
                 editor_et_noteName.setOnTouchListener((v, event) -> {
                     if (!isNameTouched) {
                         editor_et_noteName.setText("");
@@ -289,28 +348,15 @@ public class NoteEditorActivity extends AppCompatActivity implements NoteEditorV
                         }
                         return false;
                     });
-
                 }
                 break;
-
-
             case INTENT_TYPE_UPDATE:
-
-                btn_delete.setOnClickListener(v -> showAlert(getActivity(), "Delete this note?", "This action cannot be undone.", "Delete", "Cancel",
-                        (dialog, which) -> mPresenter.deleteNote(mPosition),
+                btn_delete.setOnClickListener(v -> showAlert(getContext(), "Delete this note?", "This action cannot be undone.", "Delete", "Cancel",
+                        (dialog, which) -> mPresenter.deleteNote(),
                         (dialog, which) -> dialog.dismiss()
                 ));
-
-                btn_save.setOnClickListener(v -> mPresenter.onFabClicked(
-                        NoteEditorActivity.INTENT_TYPE_UPDATE,
-                        mPosition,
-                        editor_et_noteName.getText().toString(),
-                        editor_et_description.getText().toString(),
-                        editor_et_priority.getText().toString(),
-                        getDateTimePojo()));
                 break;
         }
-
     }
 
     private boolean isLandScapeOrientation() {
