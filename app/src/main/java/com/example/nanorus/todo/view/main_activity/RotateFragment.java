@@ -7,10 +7,10 @@ import com.example.nanorus.todo.model.pojo.MainActivityRotateSavePojo;
 
 
 public class RotateFragment extends Fragment {
-    MainActivityRotateSavePojo mSavePojo;
+    private MainActivityRotateSavePojo mSavePojo;
 
     @Override
-    public void onCreate( Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
     }

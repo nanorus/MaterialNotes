@@ -1,5 +1,6 @@
 package com.example.nanorus.todo.view.main_activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -38,29 +39,31 @@ import com.squareup.otto.Subscribe;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements MainView.View {
-    MainPresenter mPresenter;
-    Toolbar mToolbar;
-    FloatingActionButton mFab;
-    RecyclerView mNotesRecyclerView;
-    SwipeRefreshLayout mSwipeRefresh;
+public class MainActivity extends AppCompatActivity implements IMainActivity {
+    private int mSortType;
+    private int mPosition;
+    private MainPresenter mPresenter;
+    private Toolbar mToolbar;
+    private FloatingActionButton mFab;
+    private RecyclerView mNotesRecyclerView;
+    private SwipeRefreshLayout mSwipeRefresh;
     private PreferenceUse mPreferences;
     private final String ROTATE_FRAGMENT_TAG = "ROTATE_FRAGMENT";
-    List<NoteRecyclerPojo> mNotes;
-    LinearLayoutManager mLinearLayoutManager;
-    boolean mIsRotated = false;
+    private List<NoteRecyclerPojo> mNotes;
+    private LinearLayoutManager mLinearLayoutManager;
+    private boolean mIsRotated = false;
 
-    ImageButton main_btn_clear_all;
-    NotesRecyclerViewAdapter adapter;
+    private ImageButton main_btn_clear_all;
+    private NotesRecyclerViewAdapter adapter;
 
-    RotateFragment mRotateFragment;
+    private RotateFragment mRotateFragment;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mPreferences = new PreferenceUse(getActivity());
+        mPreferences = new PreferenceUse(getContext());
 
         // views
         main_btn_clear_all = (ImageButton) findViewById(R.id.main_btn_clear_all);
@@ -73,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
 
         // recyclerView
         mNotesRecyclerView = (RecyclerView) findViewById(R.id.main_rv_notesList);
-        LinearLayoutManager manager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        LinearLayoutManager manager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         mNotesRecyclerView.setLayoutManager(manager);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mNotesRecyclerView.getContext(),
                 manager.getOrientation());
@@ -81,10 +84,14 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
 
         // recyclerView listener
         ItemClickSupport.addTo(mNotesRecyclerView).setOnItemClickListener(
-                (recyclerView, position, v) -> goNoteEditorActivity(NoteEditorActivity.INTENT_TYPE_UPDATE, position));
+                (recyclerView, position, v) -> {
+                    setPosition(position);
+                    goNoteEditorActivity(NoteEditorActivity.INTENT_TYPE_UPDATE, position);
+                });
         ItemClickSupport.addTo(mNotesRecyclerView).setOnItemLongClickListener((recyclerView, position, v) -> {
-            showAlert(getActivity(), "Delete this note?", "This action cannot be undone.", "Delete", "Cancel",
-                    (dialog, which) -> mPresenter.deleteNote(position),
+            setPosition(position);
+            showAlert(getContext(), "Delete this note?", "This action cannot be undone.", "Delete", "Cancel",
+                    (dialog, which) -> mPresenter.deleteNote(),
                     (dialog, which) -> dialog.dismiss()
             );
             return false;
@@ -110,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
         }
 
         // creating presenter
-        mPresenter = new MainPresenter(getActivity());
+        mPresenter = new MainPresenter(getView());
 
         // navigation drawer
         setDrawer();
@@ -118,9 +125,31 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
 
 
     @Override
+    public int getPosition() {
+        return mPosition;
+    }
+
+    @Override
+    public void setPosition(int position) {
+        mPosition = position;
+    }
+
+
+    @Override
+    public int getSortType() {
+        return mPreferences.loadSortType();
+    }
+
+    @Override
+    public void setSortType(int sortType) {
+        mPreferences.saveSortType(sortType);
+    }
+
+
+    @Override
     public void setAdapter(List<NoteRecyclerPojo> data) {
         mNotes = data;
-        mLinearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        mLinearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         adapter = new NotesRecyclerViewAdapter(mNotes);
         mNotesRecyclerView.setLayoutManager(mLinearLayoutManager);
         mNotesRecyclerView.setAdapter(adapter);
@@ -147,10 +176,6 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
 
     }
 
-    @Override
-    public MainActivity getActivity() {
-        return this;
-    }
 
     @Subscribe
     public void updateNotesListListener(UpdateNotesListEvent event) {
@@ -159,7 +184,8 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
 
     @Override
     public void updateNotesList(int sortBy) {
-        mPresenter.setNotesList(sortBy);
+        mSortType = sortBy;
+        mPresenter.setNotesList();
     }
 
 
@@ -183,6 +209,16 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
         return mIsRotated;
     }
 
+    @Override
+    public IMainActivity getView() {
+        return this;
+    }
+
+    @Override
+    public Activity getContext() {
+        return this;
+    }
+
 
     @Override
     protected void onDestroy() {
@@ -198,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
 
 
     private void setListeners() {
-        main_btn_clear_all.setOnClickListener(v -> showAlert(getActivity(), "Clear ALL notes?", "This will remove every note and can't be undone.", "Delete", "Cancel",
+        main_btn_clear_all.setOnClickListener(v -> showAlert(getContext(), "Clear ALL notes?", "This will remove every note and can't be undone.", "Delete", "Cancel",
                 (dialog, which) -> mPresenter.onTouchClearNotes(),
                 (dialog, which) -> dialog.dismiss()
         ));
@@ -212,7 +248,7 @@ public class MainActivity extends AppCompatActivity implements MainView.View {
     }
 
     private void goNoteEditorActivity(int type, int position) {
-        Intent intent = new Intent(getActivity(), NoteEditorActivity.class);
+        Intent intent = new Intent(getContext(), NoteEditorActivity.class);
         intent.putExtra("type", type);
         if (type == NoteEditorActivity.INTENT_TYPE_UPDATE) {
             intent.putExtra("position", position);

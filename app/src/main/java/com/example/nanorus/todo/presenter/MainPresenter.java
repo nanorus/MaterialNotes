@@ -7,8 +7,7 @@ import com.example.nanorus.todo.model.pojo.MainActivityRotateSavePojo;
 import com.example.nanorus.todo.model.pojo.NotePojo;
 import com.example.nanorus.todo.model.pojo.NoteRecyclerPojo;
 import com.example.nanorus.todo.utils.PreferenceUse;
-import com.example.nanorus.todo.view.main_activity.MainActivity;
-import com.example.nanorus.todo.view.main_activity.MainView;
+import com.example.nanorus.todo.view.main_activity.IMainActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,52 +18,53 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class MainPresenter implements MainView.Action {
-    MainView.View mActivity;
+public class MainPresenter implements IMainPresenter {
+    private IMainActivity mView;
     private PreferenceUse mPreferences;
-    Subscription noteRecyclerPojosSubscriber;
-    Observable<List<NoteRecyclerPojo>> mNoteRecyclerPojosObservable;
-    List<NoteRecyclerPojo> mNoteRecyclerPojos;
+    private Subscription noteRecyclerPojosSubscriber;
+    private Observable<List<NoteRecyclerPojo>> mNoteRecyclerPojosObservable;
+    private List<NoteRecyclerPojo> mNoteRecyclerPojos;
 
-    public MainPresenter(MainActivity activity) {
-        mActivity = activity;
-        mPreferences = new PreferenceUse(activity);
+    public MainPresenter(IMainActivity view) {
+        mView = view;
+        mPreferences = new PreferenceUse(view.getContext());
 
-        if (mActivity.isRotated()) {
+        if (mView.isRotated()) {
             continueSettingNotesList();
         } else {
             mNoteRecyclerPojos = new ArrayList<>();
-            mActivity.setAdapter(mNoteRecyclerPojos);
-            setNotesList(mPreferences.loadSortType());
+            mView.setAdapter(mNoteRecyclerPojos);
+            setNotesList();
         }
     }
 
     @Override
-    public void setNotesList(int sortBy) {
-        mActivity.setSwipeRefreshing(true);
+    public void setNotesList() {
+        mView.setSwipeRefreshing(true);
 
         if (mNoteRecyclerPojos != null)
             mNoteRecyclerPojos.clear();
-        mActivity.updateAdapter(mNoteRecyclerPojos);
+        mView.updateAdapter(mNoteRecyclerPojos);
 
         if (noteRecyclerPojosSubscriber != null) {
             noteRecyclerPojosSubscriber.unsubscribe();
         }
 
         // getting observable
-        Observable<List<NotePojo>> notePojosObservable = DatabaseManager.getAllNotesObservable(mActivity.getActivity(), sortBy, 0);
+        Observable<List<NotePojo>> notePojosObservable = DatabaseManager.getAllNotesObservable(mView.getContext(),
+                mView.getSortType(), 0);
         mNoteRecyclerPojosObservable = notePojosObservable.map(notePojos -> {
-                ArrayList<NoteRecyclerPojo> noteRecyclerPojos = new ArrayList<>();
+            ArrayList<NoteRecyclerPojo> noteRecyclerPojos = new ArrayList<>();
 
-                for (int i = 0; i < notePojos.size(); i++) {
-                    NotePojo notePojo = notePojos.get(i);
-                    noteRecyclerPojos.add(new NoteRecyclerPojo(
-                            notePojo.getName(),
-                            notePojo.getDateTimePojo(),
-                            notePojo.getPriority()
-                    ));
-                }
-                return noteRecyclerPojos;
+            for (int i = 0; i < notePojos.size(); i++) {
+                NotePojo notePojo = notePojos.get(i);
+                noteRecyclerPojos.add(new NoteRecyclerPojo(
+                        notePojo.getName(),
+                        notePojo.getDateTimePojo(),
+                        notePojo.getPriority()
+                ));
+            }
+            return noteRecyclerPojos;
         });
 
         // subscribing
@@ -87,24 +87,24 @@ public class MainPresenter implements MainView.Action {
                                        @Override
                                        public void onNext(List<NoteRecyclerPojo> noteRecyclerPojos) {
                                            mNoteRecyclerPojos.addAll(noteRecyclerPojos);
-                                           mActivity.updateAdapter(mNoteRecyclerPojos);
+                                           mView.updateAdapter(mNoteRecyclerPojos);
                                        }
                                    }
                         );
-        mActivity.setSwipeRefreshing(false);
+        mView.setSwipeRefreshing(false);
 
     }
 
     @Override
     public void continueSettingNotesList() {
-        MainActivityRotateSavePojo savePojo = mActivity.loadRotateData();
+        MainActivityRotateSavePojo savePojo = mView.loadRotateData();
         if (savePojo != null)
             mNoteRecyclerPojos = savePojo.getNoteRecyclerPojos();
-        mActivity.setAdapter(mNoteRecyclerPojos);
+        mView.setAdapter(mNoteRecyclerPojos);
 
 
         // getting observable
-        Observable<List<NotePojo>> notePojosObservable = DatabaseManager.getAllNotesObservable(mActivity.getActivity(),
+        Observable<List<NotePojo>> notePojosObservable = DatabaseManager.getAllNotesObservable(mView.getContext(),
                 mPreferences.loadSortType(), mNoteRecyclerPojos.size());
 
 
@@ -140,7 +140,7 @@ public class MainPresenter implements MainView.Action {
                                        @Override
                                        public void onNext(List<NoteRecyclerPojo> noteRecyclerPojos) {
                                            mNoteRecyclerPojos.addAll(noteRecyclerPojos);
-                                           mActivity.updateAdapter(mNoteRecyclerPojos);
+                                           mView.updateAdapter(mNoteRecyclerPojos);
                                        }
                                    }
                         );
@@ -148,9 +148,10 @@ public class MainPresenter implements MainView.Action {
 
 
     @Override
-    public void deleteNote(int position) {
-        int id = DatabaseManager.getNoteDbIdByPosition(mActivity.getActivity(), position, mPreferences.loadSortType());
-        DatabaseManager.deleteNote(id, mActivity.getActivity());
+    public void deleteNote() {
+        int id = DatabaseManager.getNoteDbIdByPosition(mView.getContext(), mView.getPosition(),
+                mPreferences.loadSortType());
+        DatabaseManager.deleteNote(id, mView.getContext());
         EventBus.getBus().post(new UpdateNotesListEvent(mPreferences.loadSortType()));
     }
 
@@ -163,18 +164,18 @@ public class MainPresenter implements MainView.Action {
         mNoteRecyclerPojosObservable = null;
         mPreferences = null;
         mNoteRecyclerPojos = null;
-        mActivity = null;
+        mView = null;
     }
 
     @Override
     public void onTouchClearNotes() {
-        DatabaseManager.clearNotes(mActivity.getActivity());
+        DatabaseManager.clearNotes(mView.getContext());
         EventBus.getBus().post(new UpdateNotesListEvent(DatabaseManager.SORT_BY_DATE_CREATING));
     }
 
     @Override
     public void saveRotateData() {
-        mActivity.saveRotateData(new MainActivityRotateSavePojo(mNoteRecyclerPojos));
+        mView.saveRotateData(new MainActivityRotateSavePojo(mNoteRecyclerPojos));
     }
 
 
